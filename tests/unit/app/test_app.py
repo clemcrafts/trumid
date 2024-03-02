@@ -1,25 +1,27 @@
 import numpy as np
 import unittest
 from unittest.mock import patch
-from src.app.app import calculate_rolling_heat_index_optimized,calculate_heat_index  # Update with the actual module name
+from src.app.app import calculate_heat_index_optimized, calculate_rolling_heat_index_optimized
+from pandas import Timestamp
 
 
 class TestCalculateRollingHeatIndexOptimized(unittest.TestCase):
 
-    def test_calculate_heat_index(self):
-        temperature = np.array([85, 90])
-        humidity = np.array([70, 75])
+    def test_calculate_heat_index_optimized(self):
+        # Example input and expected output
+        temperature = np.array([85, 90, 95])
+        humidity = np.array([40, 50, 60])
+        expected_output = np.array([84.32634,  94.59694, 113.09031])
 
-        # Calculate the heat index using the provided constants
-        expected_heat_index = calculate_heat_index(temperature, humidity)
+        # Execute the function under test
+        result = calculate_heat_index_optimized(temperature, humidity)
 
-        # Example expected values, replace with actual expected results based on the constants C1-C9
-        actual_heat_index = np.array([92.70214919999987, 109.48049420000007])
+        # Verify the result
+        np.testing.assert_array_almost_equal(result, expected_output,
+                                             decimal=5,
+                                             err_msg="Heat index calculation did not match expected output.")
 
-        # Use np.testing.assert_array_almost_equal to compare arrays since floating point arithmetic can have small differences
-        np.testing.assert_array_almost_equal(expected_heat_index, actual_heat_index, decimal=5)
-
-    @patch('src.app.app.calculate_heat_index')
+    @patch('src.app.app.calculate_heat_index_optimized')
     def test_calculate_rolling_heat_index_optimized(self, mock_calculate_heat_index):
         # Setup mock return values that correspond to each input
         # Assuming the mock should return the sum of temperature and humidity as a simplified heat index for testing
@@ -34,14 +36,12 @@ class TestCalculateRollingHeatIndexOptimized(unittest.TestCase):
 
         # Expected output assuming mocked heat index calculation as mentioned
         expected_output = [
-            {'city': 'CityA', 'temperature': 85, 'humidity': 70, 'heat_index': 155, 'rolling_heat_index': 155},
-            {'city': 'CityA', 'temperature': 90, 'humidity': 75, 'heat_index': 165, 'rolling_heat_index': 160},
-            {'city': 'CityB', 'temperature': 88, 'humidity': 65, 'heat_index': 153, 'rolling_heat_index': 153},
-            {'city': 'CityB', 'temperature': 92, 'humidity': 60, 'heat_index': 152, 'rolling_heat_index': 152.5}
+          {'reading_at': Timestamp('2024-01-01 00:00:00'), 'city': 'CityA', 'temperature': 85.0, 'humidity': 70.0, 'heat_index': 155.0, 'rolling_heat_index': 155.0},
+          {'reading_at': Timestamp('2024-01-01 12:00:00'), 'city': 'CityA', 'temperature': 90.0, 'humidity': 75.0, 'heat_index': 165.0, 'rolling_heat_index': 160.0},
+          {'reading_at': Timestamp('2024-01-01 00:00:00'), 'city': 'CityB', 'temperature': 88.0, 'humidity': 65.0, 'heat_index': 153.0, 'rolling_heat_index': 153.0},
+          {'reading_at': Timestamp('2024-01-01 12:00:00'), 'city': 'CityB', 'temperature': 92.0, 'humidity': 60.0, 'heat_index': 152.0, 'rolling_heat_index': 152.5}
         ]
-
 
         # Call the function under test
         result = calculate_rolling_heat_index_optimized(readings)
-
         self.assertEqual(result, expected_output)
