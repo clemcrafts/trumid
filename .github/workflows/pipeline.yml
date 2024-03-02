@@ -50,6 +50,5 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r src/app/requirements.txt
         pip install -r tests/requirements.txt
-
     - name: Run end-to-end tests
-      run: pytest tests/end-2-end
+      run: behave tests/end-2-end
