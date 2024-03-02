@@ -1,6 +1,6 @@
-import numpy as np
+from pandas import Timestamp
 import unittest
-from src.app.app import calculate_rolling_heat_index_optimized,calculate_heat_index  # Update with the actual module name
+from src.app.app import calculate_rolling_heat_index_optimized
 
 
 class TestCalculateRollingHeatIndexOptimized(unittest.TestCase):
@@ -14,10 +14,11 @@ class TestCalculateRollingHeatIndexOptimized(unittest.TestCase):
         ]
 
         expected_output = [
-            {'city': 'CityA', 'temperature': 85, 'humidity': 70, 'heat_index': 92.70214919999987, 'rolling_heat_index': 92.70214919999987},
-            {'city': 'CityA', 'temperature': 90, 'humidity': 75, 'heat_index': 109.48049420000007, 'rolling_heat_index': 101.09132169999997},
-            {'city': 'CityB', 'temperature': 88, 'humidity': 65, 'heat_index': 97.56265522000008, 'rolling_heat_index': 97.56265522000008},
-            {'city': 'CityB', 'temperature': 92, 'humidity': 60, 'heat_index': 104.68441864000005, 'rolling_heat_index': 101.12353693000006}
+            {'reading_at': Timestamp('2024-01-01 00:00:00'), 'city': 'CityA', 'temperature': 85.0, 'humidity': 70.0, 'heat_index': 92.70219421386719, 'rolling_heat_index': 92.70219421386719},
+            {'reading_at': Timestamp('2024-01-01 12:00:00'), 'city': 'CityA', 'temperature': 90.0, 'humidity': 75.0, 'heat_index': 109.48046112060547, 'rolling_heat_index': 101.09132766723633},
+            {'reading_at': Timestamp('2024-01-01 00:00:00'), 'city': 'CityB', 'temperature': 88.0, 'humidity': 65.0, 'heat_index': 97.56265258789062, 'rolling_heat_index': 97.56265258789062},
+            {'reading_at': Timestamp('2024-01-01 12:00:00'), 'city': 'CityB', 'temperature': 92.0, 'humidity': 60.0, 'heat_index': 104.68445587158203, 'rolling_heat_index': 101.12355422973633}
         ]
+
         result = calculate_rolling_heat_index_optimized(readings)
         self.assertEqual(result, expected_output)
