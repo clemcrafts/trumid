@@ -1,7 +1,15 @@
-from .config import C1, C2, C3, C4, C5, C6, C7, C8, C9
 import pandas as pd
 import numpy as np
 import typing
+from config import (C1_HEAT_INDEX_COEFFICIENT,
+                     C2_HEAT_INDEX_COEFFICIENT,
+                     C3_HEAT_INDEX_COEFFICIENT,
+                     C4_HEAT_INDEX_COEFFICIENT,
+                     C5_HEAT_INDEX_COEFFICIENT,
+                     C6_HEAT_INDEX_COEFFICIENT,
+                     C7_HEAT_INDEX_COEFFICIENT,
+                     C8_HEAT_INDEX_COEFFICIENT,
+                     C9_HEAT_INDEX_COEFFICIENT)
 
 
 def calculate_rolling_heat_index_optimized(readings: typing.List[dict],
@@ -55,7 +63,12 @@ def calculate_heat_index_optimized(temperature: np.ndarray, humidity: np.ndarray
     temp_square = temperature ** 2
     humid_square = humidity ** 2
     temp_humid = temperature * humidity
-
-    return (C1 + C2 * temperature + C3 * humidity + C4 * temp_humid +
-            C5 * temp_square + C6 * humid_square + C7 * temp_square * humidity +
-            C8 * humid_square * temperature + C9 * temp_square * humid_square)
+    return (C1_HEAT_INDEX_COEFFICIENT +
+            C2_HEAT_INDEX_COEFFICIENT * temperature +
+            C3_HEAT_INDEX_COEFFICIENT * humidity +
+            C4_HEAT_INDEX_COEFFICIENT * temp_humid +
+            C5_HEAT_INDEX_COEFFICIENT * temp_square +
+            C6_HEAT_INDEX_COEFFICIENT * humid_square +
+            C7_HEAT_INDEX_COEFFICIENT * temp_square * humidity +
+            C8_HEAT_INDEX_COEFFICIENT * humid_square * temperature +
+            C9_HEAT_INDEX_COEFFICIENT * temp_square * humid_square)

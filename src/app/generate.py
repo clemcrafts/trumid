@@ -1,6 +1,13 @@
 import pandas as pd
 import random
 import typing
+from config import (
+    TEMPERATURE_SAMPLE_MIN,
+    TEMPERATURE_SAMPLE_MAX,
+    TEMPERATURE_SAMPLE_MIN,
+    TEMPERATURE_SAMPLE_MAX,
+    WIND_SPEED_SAMPLE_MIN,
+    WIND_SPEED_SAMPLE_MAX)
 
 
 def generate_test_data(start_at: str = "2024-02-01",
@@ -37,9 +44,9 @@ def generate_test_data(start_at: str = "2024-02-01",
         [
             {
                 "city": city,
-                "temperature": random.randint(40, 90),
-                "humidity": random.randint(0, 100),
-                "wind_speed": random.randint(0, 30),
+                "temperature": random.randint(TEMPERATURE_SAMPLE_MIN, TEMPERATURE_SAMPLE_MAX),
+                "humidity": random.randint(TEMPERATURE_SAMPLE_MIN, TEMPERATURE_SAMPLE_MAX),
+                "wind_speed": random.randint(WIND_SPEED_SAMPLE_MIN, WIND_SPEED_SAMPLE_MAX),
                 "reading_at": ts
             }
             for ts in
