@@ -16,10 +16,10 @@ class ReadingsSchema(Schema):
     def validate_temperature(self, value):
         if not (40 <= value <= 90):
             raise ValidationError(
-                'Temperature must be between -50.0 and 60.0 degrees Celsius.')
+                'Temperature must be between 40 and 90 degrees.')
 
     @validates('humidity')
     def validate_humidity(self, value):
-        if not (0.0 <= value <= 100.0):
+        if not (0 <= value <= 100):
             raise ValidationError(
                 'Humidity must be between 0.0 and 100.0%.')

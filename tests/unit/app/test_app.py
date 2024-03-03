@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
 from unittest.mock import patch
-from src.app.app import calculate_heat_index_optimized, calculate_rolling_heat_index_optimized
+from src.app.app import calculate_heat_index_optimized, calculate_rolling_heat_index_optimized, validate_readings
 from pandas import Timestamp
 
 
@@ -23,9 +23,9 @@ class TestCalculateRollingHeatIndexOptimized(unittest.TestCase):
 
         result = calculate_heat_index_optimized(temperature, humidity)
 
-        np.testing.assert_array_almost_equal(result, expected_output,
-                                             decimal=5,
-                                             err_msg="Heat index calculation did not match expected output.")
+        np.testing.assert_array_almost_equal(
+            result, expected_output, decimal=5,
+            err_msg="Heat index calculation did not match expected output.")
 
     @patch('src.app.app.calculate_heat_index_optimized')
     def test_calculate_rolling_heat_index_optimized(self, mock_calculate_heat_index):
@@ -63,3 +63,44 @@ class TestCalculateRollingHeatIndexOptimized(unittest.TestCase):
         # Call the function under test
         result = calculate_rolling_heat_index_optimized(readings)
         self.assertEqual(result, expected_output)
+
+    def test_validate_valid_readings(self):
+        """
+        Test that validate_readings successfully validates and returns
+        readings that meet the schema criteria.
+
+        This test provides a set of valid readings according to the
+        predefined schema, expecting the function
+        to return these readings as-is, indicating successful validation.
+        """
+        readings = [
+            {"city": "ValidCity", "reading_at": "2024-02-01 00:00:00+00:00",
+             "temperature": 45, "humidity": 50, "wind_speed": 80}
+        ]
+
+        expected_valid_readings = [
+            {"city": "ValidCity", "reading_at": "2024-02-01 00:00:00+00:00",
+             "temperature": 45, "humidity": 50, "wind_speed": 80}
+        ]
+        result = validate_readings(readings)
+        self.assertEqual(result, expected_valid_readings)
+
+    @patch('src.app.app.logger')
+    def test_validate_invalid_readings_logs_error(self, mocked_log):
+        """
+        Test that validate_readings logs an error and discards readings that
+        do not meet the schema criteria.
+
+        This test provides a set of invalid readings, expecting the function
+        to return an empty list and
+        to log an error indicating that invalid data was discarded. This
+        tests the function's error handling
+        and logging behavior when faced with invalid input.
+        """
+        readings = [
+            {"city": "INVALID", "invalid": "2024-02-01 00:00:00+00:00",
+             "temperature": -432}
+        ]
+        result = validate_readings(readings)
+        self.assertEqual(result, [])
+        mocked_log.error.assert_called_once()

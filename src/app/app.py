@@ -15,24 +15,6 @@ from src.app.schema import ReadingsSchema
 from marshmallow import ValidationError
 
 
-def validate_readings(readings):
-    """
-    Validate the payload before applying any logic.
-
-    :param readings: List of dictionaries to validate.
-    :return: List of validated dictionaries.
-    """
-    valid_readings = []
-    schema = ReadingsSchema(many=True)
-    try:
-        valid_readings = schema.load(readings)
-    except ValidationError as err:
-        logger.error(
-            f"Validation errors, we're discarding invalid data: {err.messages}")
-    return valid_readings
-
-
-
 def calculate_rolling_heat_index_optimized(
         readings: typing.List[dict],
         rolling_freq: str = "1D") -> typing.List[dict]:
@@ -111,3 +93,20 @@ def calculate_heat_index_optimized(
             C7_HEAT_INDEX_COEFFICIENT * temp_square * humidity +
             C8_HEAT_INDEX_COEFFICIENT * humid_square * temperature +
             C9_HEAT_INDEX_COEFFICIENT * temp_square * humid_square)
+
+
+def validate_readings(readings):
+    """
+    Validate the payload before applying any logic.
+
+    :param readings: List of dictionaries to validate.
+    :return: List of validated dictionaries.
+    """
+    schema = ReadingsSchema(many=True)
+    try:
+        schema.load(readings)
+    except ValidationError as err:
+        logger.error(
+            f"Validation errors, we're discarding the data: {err.messages}")
+        return []
+    return readings
