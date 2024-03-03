@@ -6,25 +6,43 @@ from pandas import Timestamp
 
 
 class TestCalculateRollingHeatIndexOptimized(unittest.TestCase):
+    """
+    A test suite for validating the calculate_rolling_heat_index_optimized and calculate_heat_index_optimized
+    functions from the src.app.app module. It includes tests for accuracy of calculations and the functionality
+    of the rolling heat index calculation with mocked dependencies.
+    """
 
     def test_calculate_heat_index_optimized(self):
-        # Example input and expected output
+        """
+        Tests the calculate_heat_index_optimized function for accuracy by comparing the calculated heat index
+        values against expected results for a set of predefined temperature and humidity values.
+        """
         temperature = np.array([85, 90, 95])
         humidity = np.array([40, 50, 60])
         expected_output = np.array([84.32634,  94.59694, 113.09031])
 
-        # Execute the function under test
         result = calculate_heat_index_optimized(temperature, humidity)
 
-        # Verify the result
         np.testing.assert_array_almost_equal(result, expected_output,
                                              decimal=5,
                                              err_msg="Heat index calculation did not match expected output.")
 
     @patch('src.app.app.calculate_heat_index_optimized')
     def test_calculate_rolling_heat_index_optimized(self, mock_calculate_heat_index):
-        # Setup mock return values that correspond to each input
-        # Assuming the mock should return the sum of temperature and humidity as a simplified heat index for testing
+        """
+         Tests the calculate_rolling_heat_index_optimized function using a
+         mocked version of
+         calculate_heat_index_optimized to verify the rolling calculation
+         and aggregation logic.
+         Mocking allows for simplified testing of the rolling functionality
+         independent of the
+         actual heat index calculation logic.
+
+         Parameters:
+         - mock_calculate_heat_index: The mock object for the
+         calculate_heat_index_optimized function,
+           provided by the 'unittest.mock.patch' decorator.
+         """
         mock_calculate_heat_index.side_effect = lambda temperature, humidity: temperature + humidity
 
         readings = [
