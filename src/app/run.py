@@ -18,7 +18,7 @@ def run():
     """
     # Initialize start and end dates
     start_date = datetime.strptime("2024-02-01", "%Y-%m-%d")
-    end_date = datetime.strptime("2024-02-08", "%Y-%m-%d")
+    end_date = datetime.strptime("2024-02-02", "%Y-%m-%d")
 
     while True:
         time.sleep(BATCH_FREQUENCY_SECONDS)
