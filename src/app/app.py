@@ -35,8 +35,8 @@ def calculate_rolling_heat_index_optimized(readings: typing.List[dict],
     df['reading_at'] = pd.to_datetime(df['reading_at'])
     df.set_index('reading_at', inplace=True)
 
-    df['temperature'] = df['temperature'].astype('float32')
-    df['humidity'] = df['humidity'].astype('float32')
+    # df['temperature'] = df['temperature'].astype('float32')
+    # df['humidity'] = df['humidity'].astype('float32')
 
     df['heat_index'] = calculate_heat_index_optimized(df['temperature'], df['humidity'])
     df['rolling_heat_index'] = df.groupby('city')['heat_index'] \
