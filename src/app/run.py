@@ -44,5 +44,5 @@ def run():
         end_date += timedelta(days=1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

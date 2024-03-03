@@ -7,12 +7,13 @@ from src.app.config import (
     HUMIDITY_SAMPLE_MIN,
     HUMIDITY_SAMPLE_MAX,
     WIND_SPEED_SAMPLE_MIN,
-    WIND_SPEED_SAMPLE_MAX)
+    WIND_SPEED_SAMPLE_MAX,
+)
 
 
-def generate_test_data(start_at: str = "2024-02-01",
-                       end_at: str = "2024-02-08",
-                       freq: str = "5T") -> typing.List[dict]:
+def generate_test_data(
+    start_at: str = "2024-02-01", end_at: str = "2024-02-08", freq: str = "5T"
+) -> typing.List[dict]:
     """
     Generates a list of dictionaries containing simulated weather data for multiple cities.
 
@@ -38,19 +39,28 @@ def generate_test_data(start_at: str = "2024-02-01",
         'reading_at': '2024-02-01 00:00:00+00:00'
     }
     """
-    cities = ["New York", "Los Angeles", "Detroit", "Chicago",
-              "San Francisco", "Seattle"]
+    cities = [
+        "New York",
+        "Los Angeles",
+        "Detroit",
+        "Chicago",
+        "San Francisco",
+        "Seattle",
+    ]
     df = pd.DataFrame.from_records(
         [
             {
                 "city": city,
-                "temperature": random.randint(TEMPERATURE_SAMPLE_MIN, TEMPERATURE_SAMPLE_MAX),
+                "temperature": random.randint(
+                    TEMPERATURE_SAMPLE_MIN, TEMPERATURE_SAMPLE_MAX
+                ),
                 "humidity": random.randint(HUMIDITY_SAMPLE_MIN, HUMIDITY_SAMPLE_MAX),
-                "wind_speed": random.randint(WIND_SPEED_SAMPLE_MIN, WIND_SPEED_SAMPLE_MAX),
-                "reading_at": ts
+                "wind_speed": random.randint(
+                    WIND_SPEED_SAMPLE_MIN, WIND_SPEED_SAMPLE_MAX
+                ),
+                "reading_at": ts,
             }
-            for ts in
-            pd.date_range(start_at, end_at, freq=freq, tz="UTC")
+            for ts in pd.date_range(start_at, end_at, freq=freq, tz="UTC")
             for city in cities
         ]
     )

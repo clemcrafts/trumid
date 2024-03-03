@@ -2,22 +2,24 @@ import pandas as pd
 import numpy as np
 import typing
 from src.app.logger import logger
-from src.app.config import (C1_HEAT_INDEX_COEFFICIENT,
-                            C2_HEAT_INDEX_COEFFICIENT,
-                            C3_HEAT_INDEX_COEFFICIENT,
-                            C4_HEAT_INDEX_COEFFICIENT,
-                            C5_HEAT_INDEX_COEFFICIENT,
-                            C6_HEAT_INDEX_COEFFICIENT,
-                            C7_HEAT_INDEX_COEFFICIENT,
-                            C8_HEAT_INDEX_COEFFICIENT,
-                            C9_HEAT_INDEX_COEFFICIENT)
+from src.app.config import (
+    C1_HEAT_INDEX_COEFFICIENT,
+    C2_HEAT_INDEX_COEFFICIENT,
+    C3_HEAT_INDEX_COEFFICIENT,
+    C4_HEAT_INDEX_COEFFICIENT,
+    C5_HEAT_INDEX_COEFFICIENT,
+    C6_HEAT_INDEX_COEFFICIENT,
+    C7_HEAT_INDEX_COEFFICIENT,
+    C8_HEAT_INDEX_COEFFICIENT,
+    C9_HEAT_INDEX_COEFFICIENT,
+)
 from src.app.schema import ReadingsSchema
 from marshmallow import ValidationError
 
 
 def calculate_rolling_heat_index_optimized(
-        readings: typing.List[dict],
-        rolling_freq: str = "1D") -> typing.List[dict]:
+    readings: typing.List[dict], rolling_freq: str = "1D"
+) -> typing.List[dict]:
     """
     Calculate the rolling heat index for a list of temperature and humidity
     readings.
@@ -36,37 +38,44 @@ def calculate_rolling_heat_index_optimized(
     df = pd.DataFrame(readings)
 
     try:
-        df['reading_at'] = pd.to_datetime(df['reading_at'])
+        df["reading_at"] = pd.to_datetime(df["reading_at"])
     except KeyError as error:
         logger.exception(
-            f"The [reading_at] field is missing {error}: we discard the batch")
+            f"The [reading_at] field is missing {error}: we discard the batch"
+        )
         return []
-    df.set_index('reading_at', inplace=True)
+    df.set_index("reading_at", inplace=True)
     try:
-        df['heat_index'] = calculate_heat_index_optimized(
-            df['temperature'], df['humidity'])
+        df["heat_index"] = calculate_heat_index_optimized(
+            df["temperature"], df["humidity"]
+        )
     except KeyError as error:
         logger.exception(
-            f"Heat-related field(s) are missing {error}: we discard the batch")
+            f"Heat-related field(s) are missing {error}: we discard the batch"
+        )
         return []
     try:
-        df['rolling_heat_index'] = df.groupby('city')['heat_index'] \
-            .transform(lambda x: x.rolling(rolling_freq, closed='both').mean())
+        df["rolling_heat_index"] = df.groupby("city")["heat_index"].transform(
+            lambda x: x.rolling(rolling_freq, closed="both").mean()
+        )
     except TypeError as error:
         logger.exception(
             f"The rolling heat index failed because of a type issue: {error}."
-            f"We discard the batch.")
+            f"We discard the batch."
+        )
         return []
     except Exception as error:
         logger.exception(
-            f"The rolling heat index calculation failed: {error}. We discard the batch.")
+            f"The rolling heat index calculation failed: {error}. We discard the batch."
+        )
         return []
     df.reset_index(inplace=True)
-    return df.to_dict('records')
+    return df.to_dict("records")
 
 
 def calculate_heat_index_optimized(
-        temperature: np.ndarray, humidity: np.ndarray) -> np.ndarray:
+    temperature: np.ndarray, humidity: np.ndarray
+) -> np.ndarray:
     """
     Vectorized version of heat index calculation, optimized with pre-calculated squares.
 
@@ -81,18 +90,20 @@ def calculate_heat_index_optimized(
     Returns:
     - np.ndarray: An array of calculated heat index values.
     """
-    temp_square = temperature ** 2
-    humid_square = humidity ** 2
+    temp_square = temperature**2
+    humid_square = humidity**2
     temp_humid = temperature * humidity
-    return (C1_HEAT_INDEX_COEFFICIENT +
-            C2_HEAT_INDEX_COEFFICIENT * temperature +
-            C3_HEAT_INDEX_COEFFICIENT * humidity +
-            C4_HEAT_INDEX_COEFFICIENT * temp_humid +
-            C5_HEAT_INDEX_COEFFICIENT * temp_square +
-            C6_HEAT_INDEX_COEFFICIENT * humid_square +
-            C7_HEAT_INDEX_COEFFICIENT * temp_square * humidity +
-            C8_HEAT_INDEX_COEFFICIENT * humid_square * temperature +
-            C9_HEAT_INDEX_COEFFICIENT * temp_square * humid_square)
+    return (
+        C1_HEAT_INDEX_COEFFICIENT
+        + C2_HEAT_INDEX_COEFFICIENT * temperature
+        + C3_HEAT_INDEX_COEFFICIENT * humidity
+        + C4_HEAT_INDEX_COEFFICIENT * temp_humid
+        + C5_HEAT_INDEX_COEFFICIENT * temp_square
+        + C6_HEAT_INDEX_COEFFICIENT * humid_square
+        + C7_HEAT_INDEX_COEFFICIENT * temp_square * humidity
+        + C8_HEAT_INDEX_COEFFICIENT * humid_square * temperature
+        + C9_HEAT_INDEX_COEFFICIENT * temp_square * humid_square
+    )
 
 
 def validate_readings(readings):
@@ -106,7 +117,6 @@ def validate_readings(readings):
     try:
         schema.load(readings)
     except ValidationError as err:
-        logger.error(
-            f"Validation errors, we're discarding the data: {err.messages}")
+        logger.error(f"Validation errors, we're discarding the data: {err.messages}")
         return []
     return readings
