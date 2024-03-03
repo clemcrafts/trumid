@@ -1,6 +1,7 @@
 import time
 from datetime import datetime, timedelta
-from src.app.app import calculate_rolling_heat_index_optimized
+from src.app.logger import logger
+from src.app.app import calculate_rolling_heat_index_optimized, validate_readings
 from src.app.generate import generate_test_data
 from src.app.config import BATCH_FREQUENCY_SECONDS
 
@@ -20,18 +21,25 @@ def run():
     end_date = datetime.strptime("2024-02-02", "%Y-%m-%d")
 
     while True:
-        print("New Batch...")
+        logger.info("New Batch...")
         time.sleep(BATCH_FREQUENCY_SECONDS)
-
-        # Convert dates to strings for the function call
         start_at_str = start_date.strftime("%Y-%m-%d")
         end_at_str = end_date.strftime("%Y-%m-%d")
-
-        # Generate test data for the current date range
-        calculate_rolling_heat_index_optimized(
-            generate_test_data(start_at=start_at_str, end_at=end_at_str))
-
-        # Update the start and end dates for the next iteration
+        try:
+            readings = generate_test_data(start_at=start_at_str, end_at=end_at_str)
+        except Exception as error:
+            logger.info(f"An error occurred when generating the data {error}")
+            return
+        try:
+            valid_readings = validate_readings(readings)
+        except Exception as error:
+            logger.info(f"An error occurred when validating the data: {error}")
+            continue
+        try:
+            calculate_rolling_heat_index_optimized(valid_readings)
+        except Exception as error:
+            logger.info(f"An error occurred when calculating the heat index: {error}")
+            continue
         start_date += timedelta(days=1)
         end_date += timedelta(days=1)
 
