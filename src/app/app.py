@@ -72,3 +72,4 @@ def calculate_heat_index_optimized(temperature: np.ndarray, humidity: np.ndarray
             C7_HEAT_INDEX_COEFFICIENT * temp_square * humidity +
             C8_HEAT_INDEX_COEFFICIENT * humid_square * temperature +
             C9_HEAT_INDEX_COEFFICIENT * temp_square * humid_square)
+

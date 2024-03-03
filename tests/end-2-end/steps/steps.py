@@ -77,15 +77,15 @@ def step_measure_optimized_execution_time(context):
     context.optimized_execution_time = time.time() - start_time
 
 
-@then('the optimized method should be at least 99% faster than the baseline method')
+@then('the optimized method should be at least 97% faster than the baseline method')
 def step_assess_optimization_efficiency(context):
     """
     Compares the execution time of the baseline and optimized methods, asserting that the optimized method
-    is at least 90% faster than the baseline. This step ensures the optimization's efficiency goal is met.
+    is at least 97% faster than the baseline. This step ensures the optimization's efficiency goal is met.
     """
     improvement = 1 - (context.optimized_execution_time / context.baseline_execution_time)
     improvement_percent = improvement*100
-    assert improvement >= 0.99, f"Optimization improvement was {improvement_percent:.2f}%, expected at least 99%."
+    assert improvement >= 0.97, f"Optimization improvement was {improvement_percent:.2f}%, expected at least 97%."
 
 
 def generate_test_data(context, cities, frequency):

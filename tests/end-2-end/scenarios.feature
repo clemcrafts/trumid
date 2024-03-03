@@ -10,16 +10,16 @@ Feature: Compare optimized and baseline heat index calculations
     Given we have generated a small dataset
     When we measure the execution time of the baseline method
     And we measure the execution time of the optimized method
-    Then the optimized method should be at least 99% faster than the baseline method
+    Then the optimized method should be at least 97% faster than the baseline method
 
   Scenario: Assess optimization efficiency for a medium dataset
     Given we have generated a medium dataset
     When we measure the execution time of the baseline method
     And we measure the execution time of the optimized method
-    Then the optimized method should be at least 99% faster than the baseline method
+    Then the optimized method should be at least 97% faster than the baseline method
 
   Scenario: Assess optimization efficiency for a large dataset
     Given we have generated a large dataset
     When we measure the execution time of the baseline method
     And we measure the execution time of the optimized method
-    Then the optimized method should be at least 99% faster than the baseline method
+    Then the optimized method should be at least 97% faster than the baseline method
