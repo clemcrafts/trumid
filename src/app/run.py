@@ -20,6 +20,7 @@ def run():
     end_date = datetime.strptime("2024-02-02", "%Y-%m-%d")
 
     while True:
+        print("New Batch...")
         time.sleep(BATCH_FREQUENCY_SECONDS)
 
         # Convert dates to strings for the function call
