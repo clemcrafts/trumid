@@ -10,7 +10,10 @@ from src.app.baseline import calculate_rolling_heat_index
 
 @given("we have generated a small dataset")
 def step_generate_small_test_data(context):
-    generate_test_data(context, cities=["New York", "Los Angeles"], frequency="1T")
+    generate_test_data(
+        context,
+        cities=["New York", "Los Angeles"],
+        frequency="1T")
 
 
 @given("we have generated a medium dataset")
