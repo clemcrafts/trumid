@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 import typing
 from config import (C1_HEAT_INDEX_COEFFICIENT,
-                     C2_HEAT_INDEX_COEFFICIENT,
-                     C3_HEAT_INDEX_COEFFICIENT,
-                     C4_HEAT_INDEX_COEFFICIENT,
-                     C5_HEAT_INDEX_COEFFICIENT,
-                     C6_HEAT_INDEX_COEFFICIENT,
-                     C7_HEAT_INDEX_COEFFICIENT,
-                     C8_HEAT_INDEX_COEFFICIENT,
-                     C9_HEAT_INDEX_COEFFICIENT)
+                    C2_HEAT_INDEX_COEFFICIENT,
+                    C3_HEAT_INDEX_COEFFICIENT,
+                    C4_HEAT_INDEX_COEFFICIENT,
+                    C5_HEAT_INDEX_COEFFICIENT,
+                    C6_HEAT_INDEX_COEFFICIENT,
+                    C7_HEAT_INDEX_COEFFICIENT,
+                    C8_HEAT_INDEX_COEFFICIENT,
+                    C9_HEAT_INDEX_COEFFICIENT)
 
 
 def calculate_rolling_heat_index_optimized(readings: typing.List[dict],
