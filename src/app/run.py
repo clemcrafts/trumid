@@ -1,8 +1,8 @@
 import time
-from app import calculate_rolling_heat_index, store
-from generate import generate_test_data
 from datetime import datetime, timedelta
-from config import BATCH_FREQUENCY_SECONDS
+from src.app.app import calculate_rolling_heat_index_optimized
+from src.app.generate import generate_test_data
+from src.app.config import BATCH_FREQUENCY_SECONDS
 
 
 def run():
@@ -16,7 +16,6 @@ def run():
     the rolling heat index, and the results are stored along with the
     current timestamp.
     """
-    # Initialize start and end dates
     start_date = datetime.strptime("2024-02-01", "%Y-%m-%d")
     end_date = datetime.strptime("2024-02-02", "%Y-%m-%d")
 
@@ -28,11 +27,8 @@ def run():
         end_at_str = end_date.strftime("%Y-%m-%d")
 
         # Generate test data for the current date range
-        result = calculate_rolling_heat_index(
+        calculate_rolling_heat_index_optimized(
             generate_test_data(start_at=start_at_str, end_at=end_at_str))
-
-        # Store the result with the current timestamp
-        store(datetime.now().time(), result)
 
         # Update the start and end dates for the next iteration
         start_date += timedelta(days=1)
