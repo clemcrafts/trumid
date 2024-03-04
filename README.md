@@ -7,6 +7,18 @@ We want it simple. Here is a list of all the issues I found:
 
 ![Alt text](https://i.ibb.co/WgmR2CT/Screenshot-2024-03-04-at-14-41-03.png "Optional title")
 
+## a. Strengths
+
+### 1. The application is leveraging Docker 
+Even if not done the right way via docker-compose in production, the application is dockerized and it's a good thing.
+
+### 2. Multiple containers share the (pre)-processing load
+Multiple containers are handling the same work, this is a first step for potential horizontal auto-scaling.
+
+### 3. The application is leveraging a distributed message bus 
+The application is using Kafka which is distributed, fault-resistant and a good technology at scale.
+
+## b. Weaknesses
 
 ### 1. Running on one virtual machine is a single point of failure (SPOF). 
 The fact that this is running on docker-compose in production is also a big red flag.
