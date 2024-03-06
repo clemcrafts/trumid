@@ -63,3 +63,23 @@ it is clear that while there are occasional strengths, including Docker utilizat
 The identified weaknesses, such as the single point of failure, inefficient data reloading practices, vulnerabilities in event processing, latency issues, excessive service layer complexity, and overdiversification of technologies, underline the need for a strategic overhaul. Addressing these challenges will not only mitigate risks but also enhance the system's overall scalability, performance, and reliability, thereby ensuring it can effectively meet current and future demands.
 
 ## II. System Improvement Task
+
+![Alt text](https://i.ibb.co/0h01Ybv/Screenshot-2024-03-05-at-18-23-07.png "Optional title")
+
+
+This involves a couple of microservices present on the architecture diagram (forecasting service, API service) and some others 
+like a reporting service and a UI service. They auto-scale leveraging Kubernetes and the internal auto-scaling capabilities of Flink.
+
+
+![Alt text](https://i.ibb.co/Qv3JTfy/Screenshot-2024-03-06-at-15-56-14.png "Optional title")
+
+The CI/CD is running unit, integration and component test against each docker image. Eventually 2 load tests are performed using Locust.
+
+The first one is a constant high load of messages (2x production load) and the second one is a fast ramp up in load intensity so simulate a bottleneck leading to a faster than usual acceleration of messages.
+
+
+
+
+## 1. System Improvement Task
+
+
