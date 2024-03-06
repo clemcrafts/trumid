@@ -8,24 +8,7 @@
 
 ![Alt text](https://i.ibb.co/WgmR2CT/Screenshot-2024-03-04-at-14-41-03.png "Optional title")
 
-## a. Strengths
-
-### 1. The Application is Leveraging Docker 
-The application capitalizes on Docker, encapsulating parts of the application for better control even as it currently operates primarily through docker-compose.
-It potentially opens the door for more complex orchestration solutions as the application grows and its needs become more scalable.
-
-### 2. Multiple containers share the processing and pre-processing load
-Using multiple containers of the same service to distribute the (pre-)processing workload enhances efficiency but also lays 
-the groundwork for potential horizontal auto-scaling later: auto-scaling would be ensuring that the platform can adjust to varying data demands.
-
-### 3. The application is using a performant distributed message bus 
-The application is using Kafka which is a very good choice for a real-time weather forecasting platform offering high throughput, fault tolerance and great scalability.
-
-### 4. Simplicity of Deployment and Maintenance
-A single virtual machine model simplifies the operational aspect of the application. It avoids the complexities associated with synchronizing multiple services across different servers or clusters. 
-This approach reduces the immediate overheads related to infrastructure management, network configuration, and services syncrhonization, which are inherent in distributed systems. 
-
-## b. Weaknesses
+## a. Weaknesses
 
 ### 1. Single Point of Failure in Hosting
 Utilizing a single virtual machine for running the entire platform introduces a significant risk of downtime, as it serves as a single point of failure (SPOF). Employing docker-compose in a production setting further exacerbates this vulnerability, signaling a critical area for improvement.
@@ -56,6 +39,25 @@ The architecture's reliance on numerous artificial service layers not only adds 
 The platform's strategy of employing a wide array of technologies, while indicative of versatility, suggests a lack of focus that could complicate maintenance and integration. Streamlining the technology stack may improve efficiency and cohesiveness across the system.
 
 
+
+## b. Strengths
+
+### 1. The Application is Leveraging Docker
+The application capitalizes on Docker, encapsulating parts of the application for better control even as it currently operates primarily through docker-compose.
+It potentially opens the door for more complex orchestration solutions as the application grows and its needs become more scalable.
+
+### 2. Multiple containers share the processing and pre-processing load
+Using multiple containers of the same service to distribute the (pre-)processing workload enhances efficiency but also lays 
+the groundwork for potential horizontal auto-scaling later: auto-scaling would be ensuring that the platform can adjust to varying data demands.
+
+### 3. The application is using a performant distributed message bus 
+The application is using Kafka which is a very good choice for a real-time weather forecasting platform offering high throughput, fault tolerance and great scalability.
+
+### 4. Simplicity of Deployment and Maintenance
+A single virtual machine model simplifies the operational aspect of the application. It avoids the complexities associated with synchronizing multiple services across different servers or clusters. 
+This approach reduces the immediate overheads related to infrastructure management, network configuration, and services syncrhonization, which are inherent in distributed systems. 
+
+
 ## c. Conclusion
 Upon examining the system's architecture and operational strategies, 
 it is clear that while there are occasional strengths, including Docker utilization, workload distribution there and there, and infrastructure simplicity, there are critical areas that necessitate improvement. 
@@ -78,8 +80,43 @@ The CI/CD is running unit, integration and component test against each docker im
 The first one is a constant high load of messages (2x production load) and the second one is a fast ramp up in load intensity so simulate a bottleneck leading to a faster than usual acceleration of messages.
 
 
+### 1. Scalability Improvements
+
+The assumptions behind the scalability improvements is that the system might have to cope with higher frequency data in the future like a new data point per second for all 15k cities and bigger payloads increasing the need for high throughput.
+In that case we want the system to be able to generate up to 15k/messages per second. 
+
+The legacy system would be down in a couple of hours due to (1) exceeding VM RAM (2) exceeding acceptable latency having to retrieve Gb of data from the results table on every batch (3) simply killing the database with read/write load that a single instance with no replica won't be able to handle while serving data to users.
+
+The new architecture provides the following benefits for scalability:
+
+### a. Microservices split fixing the single point of failure 
+
+First of all, scalability can be seen as a removal of the single point of failure.
+Here, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
+
+### b. Move from batching to streaming paradigm
+Batching does not really scale because it forces you to consider batch of data in a suboptimal way when streaming technologies do that for you at a lower level under the hood.
 
 
-## 1. System Improvement Task
+### c. Auto-scaling at multiple levels
+The use of Kubernetes is duplicating the number of Flink clusters, allows the forecasting service to auto-scale at 2 levels.
+First, the flink job is scaling with load on different clusters.
+
+### d. The SQL database is not a bottleneck anymore
+The SQL insertion and querying is not in the middle of the process anymore.
+
+### 2. Performance Improvements
+
+### a. Flink is a beast and removes high latency layers
+
+Flink is a distributed low-level stream processing framework for high-performing, always-available, and realtime applications.
+
+### a. The input topic is synchronized via a connector
+Flink is a distributed low-level stream processing framework for high-performing, always-available, and realtime applications.
+
+
+
+### b. The database is sharded with read-only replicas
+
 
 
