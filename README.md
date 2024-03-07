@@ -111,12 +111,45 @@ The SQL insertion and querying is not in the middle of the process anymore.
 
 Flink is a distributed low-level stream processing framework for high-performing, always-available, and realtime applications.
 
-### a. The input topic is synchronized via a connector
+### b. The input topic is synchronized via a connector
 Flink is a distributed low-level stream processing framework for high-performing, always-available, and realtime applications.
 
 
 
-### b. The database is sharded with read-only replicas
+### c. The database is sharded with read-only replicas
+
+### d. The API is scaling horizontally and leverages c aching
+
+## 2. Reliability and data quality Improvements
+
+### a. The Application has a disaster recovery mode and no-downtime deployment
+
+### b. The lower environments allow advanced testing before a prod release
+
+### c. Avro schema enables a robust data validation and a dead letter queue
 
 
+## 3. Monitoring Improvement
 
+### a. Microservices allows granular monitoring and alerting
+
+It's now possible to monitor CPU, memory and latency by component (database, forecasting service, api, etc)
+
+
+# III. System Optional Tasks
+
+## 1. BI Reporting Dashboard With Airflow and Tableau
+
+With view delivered by Airflow:
+
+![Alt text](https://i.ibb.co/9gtZ7Fm/Screenshot-2024-03-07-at-13-55-48.png "Optional title")
+
+## 2. Advanced system monitoring via Prometheus
+
+![Alt text](https://i.ibb.co/G9Q382S/Screenshot-2024-03-07-at-14-29-20.png "Optional title")
+
+Giving a dashboard of resource and monitoring like:
+
+![Alt text](https://i.ibb.co/k49pHby/Screenshot-2024-03-07-at-14-33-11.png "Optional title")
+
+## 3. End-2-end messages tracking/loging with Datadog
