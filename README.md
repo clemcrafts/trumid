@@ -135,8 +135,92 @@ Flink is a distributed low-level stream processing framework for high-performing
 
 It's now possible to monitor CPU, memory and latency by component (database, forecasting service, api, etc)
 
+# III. Code Optimization Task
 
-# III. System Optional Tasks
+## 1. Introduction
+
+For the code optimization task, we optimized the code, provided a proof that the new version is running faster, 
+integrated the test in a CI/CD with various sizes of datasets and tests (unit, integration, load), added a schema 
+validation, dockerized an application around it and prepared a placeholder for deployment in Github actions.
+
+## 2. Code optimization
+
+### a. Vectorize calculations with pandas
+
+Pandas vectorization leverages highly optimized C and Cython operations under the hood, making data manipulation and mathematical operations 
+much faster and more efficient than iterating through rows with loops.
+
+This vectorized heat index calculation is order of magnitude faster than looping with apply:
+
+```
+calculate_heat_index_optimized(
+    temperature: np.ndarray, humidity: np.ndarray
+)
+```
+
+### b. Leverage groupby, transform, mean 
+
+Pandas' built-in functions for group-wise operations and rolling calculationsare 
+significantly faster and more efficient due to the use of optimized C and Cython operations, minimizing 
+the overhead associated with Python loops.
+
+```
+df["rolling_heat_index"] = df.groupby("city")["heat_index"].transform(
+            lambda x: x.rolling(rolling_freq, closed="both").mean()
+```
+
+### c. Avoid re-calculating operations
+
+```
+temp_square = temperature**2
+humid_square = humidity**2
+temp_humid = temperature * humidity
+return (
+        C1_HEAT_INDEX_COEFFICIENT
+        + C2_HEAT_INDEX_COEFFICIENT * temperature
+        + C3_HEAT_INDEX_COEFFICIENT * humidity
+        + C4_HEAT_INDEX_COEFFICIENT * temp_humid
+        + C5_HEAT_INDEX_COEFFICIENT * temp_square
+        + C6_HEAT_INDEX_COEFFICIENT * humid_square
+        + C7_HEAT_INDEX_COEFFICIENT * temp_square * humidity
+        + C8_HEAT_INDEX_COEFFICIENT * humid_square * temperature
+        + C9_HEAT_INDEX_COEFFICIENT * temp_square * humid_square
+    )
+```
+
+## 3. Correctness analysis 
+
+As part of the end-2-end tests with behave, we verify that the baseline provided (baseline.py) is matching 
+the algorithm from our new app (app.py):
+
+```
+Scenario: Calculate rolling heat index using both methods and compare
+ Given we have generated a small dataset
+ When we calculate the rolling heat index using the baseline method
+ And we calculate the rolling heat index using the optimized method
+ Then the results from both methods should be identical
+```
+
+under the hood, it's a deep diff on the result with some reasonable tolerance:
+
+```
+@then("the results from both methods should be identical")
+def step_compare_results(context):
+    """
+    Compares the results from the baseline and optimized methods using DeepDiff.
+    Asserts that there are no differences, ensuring both methods are functionally equivalent.
+    """
+    diff = DeepDiff(
+        context.results_baseline,
+        context.results_optimized,
+        ignore_order=True,
+        ignore_numeric_type_changes=True,
+        significant_digits=0,
+    )
+    assert diff == {}, f"Results differ: {diff}"
+```
+
+# IV. System Optional Task
 
 ## 1. BI Reporting Dashboard With Airflow and Tableau
 
