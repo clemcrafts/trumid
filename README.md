@@ -146,10 +146,21 @@ With view delivered by Airflow:
 
 ## 2. Advanced system monitoring via Prometheus
 
+To monitor resources and system-level metrics, Prometheus and Grafana are the elephants in the room:
+
 ![Alt text](https://i.ibb.co/G9Q382S/Screenshot-2024-03-07-at-14-29-20.png "Optional title")
 
 Giving a dashboard of resource and monitoring like:
 
 ![Alt text](https://i.ibb.co/k49pHby/Screenshot-2024-03-07-at-14-33-11.png "Optional title")
 
-## 3. End-2-end messages tracking/loging with Datadog
+## 3. Logs Management and Centralization with Datadog
+
+To monitor logs and errors across the entire stack, Datadog is a very popular solution giving a centralized 
+view of your entire system with payloads, errors, messages tracking across services and much more:
+
+![Alt text](https://i.ibb.co/9wTYCPm/Screenshot-2024-03-07-at-15-17-05.png "Optional title")
+
+Giving log views that you can query, tagged by service, also giving a sense of the volume of messages processed:
+
+![Alt text](https://i.ibb.co/gMJ3XKR/Screenshot-2024-03-07-at-15-07-49.png "Optional title")
