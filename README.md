@@ -169,7 +169,7 @@ df["rolling_heat_index"] = df.groupby("city")["heat_index"].transform(
             lambda x: x.rolling(rolling_freq, closed="both").mean()
 ```
 
-### c. Avoid re-calculating operations
+### c. Avoid re-calculating Operations
 
 ```
 temp_square = temperature**2
@@ -188,9 +188,9 @@ return (
     )
 ```
 
-## 3. Correctness analysis 
+## 3. Correctness Analysis 
 
-As part of the end-2-end tests with behave, we verify that the baseline provided (baseline.py) is matching 
+As part of the end-2-end tests with Behave, we verify that the baseline provided (baseline.py) is matching 
 the algorithm from our new app (app.py):
 
 ```
@@ -218,6 +218,54 @@ def step_compare_results(context):
         significant_digits=0,
     )
     assert diff == {}, f"Results differ: {diff}"
+```
+
+## 3. Performance Analysis
+
+As part of the end-2-end tests with Behave, we test the performance versus the baseline against 
+3 different datasets and ensure that it's always at least 97% faster on every CI/CD run.
+
+
+```
+  Scenario: Assess optimization efficiency for a small dataset
+    Given we have generated a small dataset
+    When we measure the execution time of the baseline method
+    And we measure the execution time of the optimized method
+    Then the optimized method should be at least 97% faster than the baseline method
+
+  Scenario: Assess optimization efficiency for a medium dataset
+    Given we have generated a medium dataset
+    When we measure the execution time of the baseline method
+    And we measure the execution time of the optimized method
+    Then the optimized method should be at least 97% faster than the baseline method
+
+  Scenario: Assess optimization efficiency for a large dataset
+    Given we have generated a large dataset
+    When we measure the execution time of the baseline method
+    And we measure the execution time of the optimized method
+    Then the optimized method should be at least 97% faster than the baseline method
+``` 
+
+## 3. CI/CD and other goodies
+
+I've embedded all the tests (unit, integration, end-2-end) in a CI/CD pipeline to enforce 
+correctness and performance checks on every push:
+
+![Alt text](https://i.ibb.co/7YTbcKz/Screenshot-2024-03-07-at-22-04-07.png "Optional title")
+
+The last stage is a mocked deployment stage of the docker image (see dockerfile running the app on a constant 
+stream of randomnized data):
+
+```
+  deploy-to-dev:
+    needs: end-to-end-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Log in to Docker Hub
+        run: echo "docker/login-action@v1"
+      - name: Build and push Docker image
+        run: echo "Replace with docker push to yourusername/yourrepositoryname:yourtag via docker/build-push-action@v2"
 ```
 
 # IV. System Optional Task
