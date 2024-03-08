@@ -248,7 +248,19 @@ As part of the end-2-end tests with Behave, we test the performance versus the b
 
 For a plug-and-play script to compare baseline and optimized version, I've added tests/comparison.py:
 
-![Alt text](https://i.ibb.co/gW9t4PC/study.png "Optional title")
+![Alt text](https://i.ibb.co/fXc2xK8/Figure-1.png "Optional title")
+
+The datasets and the results are described below, the large dataset is 1 city with a data point every minute:
+
+| Dataset Size | Start Date  | End Date    | Frequency  | Optimized Execution Time (s) | Baseline Execution Time (s) |
+|--------------|-------------|-------------|------------|------------------------------|-----------------------------|
+| Small        | 2024-02-01  | 2024-02-02  | 10 mins    | 0.0112949                    | 0.5317707                   |
+| Medium       | 2024-02-01  | 2024-02-02  | 2 mins     | 0.0353853                    | 3.8580707                   |
+| Large        | 2024-02-01  | 2024-02-02  | 1 min      | 0.0851476                    | 6.7501430                   |
+
+
+Not only the vectorized version is faster on a given dataset but scales better as the dataset grows.
+To go even faster on even larger datasets would require the use of Spark/Dask in the cloud hosted on AWS EMR (for example) leveraging managed clusters, optimized for distributed map-reduce frameworks. 
 
 ## 3. CI/CD and other goodies
 
@@ -271,6 +283,7 @@ stream of randomnized data):
       - name: Build and push Docker image
         run: echo "Replace with docker push to yourusername/yourrepositoryname:yourtag via docker/build-push-action@v2"
 ```
+ 
 
 # IV. System Optional Task
 

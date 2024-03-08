@@ -11,13 +11,11 @@ from src.app.baseline import \
     calculate_rolling_heat_index  # Adjust import path as needed
 
 # Define dataset sizes to test
-dataset_sizes = ['small', 'medium', 'large', 'very large']
+dataset_sizes = ['small', 'medium', 'large']
 dataset_configurations = {
-    'small': {'start_at': '2024-02-01', 'end_at': '2024-02-02', 'freq': '1H'},
-    'medium': {'start_at': '2024-02-01', 'end_at': '2024-02-02',
-               'freq': '30T'},
-    'large': {'start_at': '2024-02-01', 'end_at': '2024-02-02', 'freq': '15T'},
-    'very large': {'start_at': '2024-02-01', 'end_at': '2024-02-08', 'freq': '15T'}
+    'small': {'start_at': '2024-02-01', 'end_at': '2024-02-02', 'freq': '10T'},
+    'medium': {'start_at': '2024-02-01', 'end_at': '2024-02-02', 'freq': '2T'},
+    'large': {'start_at': '2024-02-01', 'end_at': '2024-02-02', 'freq': '1T'}
 }
 
 # Store execution times
@@ -27,7 +25,6 @@ execution_times = {
 }
 
 for size in dataset_sizes:
-    config = dataset_configurations[size]
     config = dataset_configurations[size]
     print(f"Generating {size} dataset...")
     data = generate_test_data(config['start_at'], config['end_at'],
@@ -64,6 +61,8 @@ ax.set_title('Heat Index Calculation Time by Method and Dataset Size')
 ax.set_xticks([p + bar_width / 2 for p in index])
 ax.set_xticklabels(dataset_sizes)
 ax.legend()
+
+print(execution_times)
 
 plt.tight_layout()
 plt.show()
