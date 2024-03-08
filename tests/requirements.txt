@@ -1,3 +1,4 @@
 behave
+matplotlib
 deepdiff
 pytest

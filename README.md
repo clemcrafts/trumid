@@ -246,6 +246,10 @@ As part of the end-2-end tests with Behave, we test the performance versus the b
     Then the optimized method should be at least 97% faster than the baseline method
 ``` 
 
+For a plug-and-play script to compare baseline and optimized version, I've added tests/comparison.py:
+
+![Alt text](https://i.ibb.co/gW9t4PC/study.png "Optional title")
+
 ## 3. CI/CD and other goodies
 
 I've embedded all the tests (unit, integration, end-2-end) in a CI/CD pipeline to enforce 
