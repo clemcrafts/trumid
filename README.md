@@ -111,7 +111,11 @@ An experiment is available on the Flink's blog, showing how an increase of lag o
 ![Alt text](https://i.ibb.co/yyFxs6L/Screenshot-2024-03-08-at-19-40-27.png "Flink Autoscaling")
 
 ### d. The SQL database is not a bottleneck anymore
-The SQL insertion and querying is not in the middle of the process anymore.
+The SQL insertion and querying is not in the middle of the process anymore. The hot data is synchronized in-memory and asynchroneously 
+persisted to disk as states/checkpoints to finally be stored in S3 (for example) for backups:
+
+![Alt text](https://i.ibb.co/9s1gzvm/Screenshot-2024-03-08-at-20-59-44.png "Flink States")
+
 
 ## 2. Performance Improvements
 
