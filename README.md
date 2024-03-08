@@ -102,6 +102,14 @@ Batching does not really scale because it forces you to consider batch of data i
 The use of Kubernetes is duplicating the number of Flink clusters, allows the forecasting service to auto-scale at 2 levels.
 First, the flink job is scaling with load on different clusters.
 
+![Alt text](https://i.ibb.co/XbmmC5c/Screenshot-2024-03-08-at-19-26-48.png "Flink Autoscaling")
+
+With such a setup, Kubernetes will scale up the number of Flink clusters (with task managers) when if the load peaks and then scale it down when it drops.
+ 
+An experiment is available on the Flink's blog, showing how an increase of lag on an input Kafka topic will generate an increase of resource consumption scaling up the number of task managers decreasing the load.
+
+![Alt text](https://i.ibb.co/yyFxs6L/Screenshot-2024-03-08-at-19-40-27.png "Flink Autoscaling")
+
 ### d. The SQL database is not a bottleneck anymore
 The SQL insertion and querying is not in the middle of the process anymore.
 
