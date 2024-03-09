@@ -142,7 +142,7 @@ env.execute("Heat Index Calculation Job");
 
 I've contributed to build the entire realtime recommendation system with Flink for the TikTok-like video app Triller (https://triller.co/) and it was stunning in terms of performance. 
 
-### c. Auto-scaling at multiple levels
+### c. Auto-scaling with Flink and Kubernetes
 The use of Kubernetes is duplicating the number of Flink clusters, allows the forecasting service to auto-scale at 2 levels.
 First, the flink job is scaling with load on different clusters.
 
