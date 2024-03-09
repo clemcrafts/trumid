@@ -200,8 +200,13 @@ The application incorporates a disaster recovery strategy, ensuring continuity o
 The introduction of lower environments (such as Development, Testing, and Staging) facilitates thorough testing and validation processes before any production release. This structured approach allows for the identification and resolution of issues in a controlled manner, significantly reducing the risk of introducing bugs or performance issues to the live environment. As a result, the overall reliability of the application is greatly improved, ensuring that updates enhance rather than compromise the user experience.
 
 ### c. Robust Data Validation with Avro Schema and Dead Letter Queue Mechanism
-Utilizing Avro schema for data validation introduces a high level of data quality assurance by enforcing data structure and type conformity. This mechanism ensures that only correctly formatted data flows through the processing pipeline, reducing errors and inconsistencies. Furthermore, the implementation of a dead letter queue captures and isolates problematic data for further analysis and correction, preventing minor issues from escalating into major disruptions. Together, these measures significantly enhance the reliability and quality of data within the system, crucial for accurate weather forecasting.
+Utilizing Avro schema for data validation introduces a high level of data quality assurance by enforcing data structure and type conformity. This mechanism ensures that only correctly formatted data flows through the processing pipeline, reducing errors and inconsistencies. Furthermore, the implementation of a dead letter queue captures and isolates problematic data for further analysis and correction, preventing minor issues from escalating into major disruptions.
 
+<img src="https://i.ibb.co/Tbph6m1/Screenshot-2024-03-09-at-19-07-39.png" width="400" alt="Latency" style="display: block; margin-left: auto; margin-right: auto;">
+
+
+
+Together, these measures significantly enhance the reliability and quality of data within the system, crucial for accurate weather forecasting.
 
 # III. Code Optimization Task
 
