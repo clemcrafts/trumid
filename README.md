@@ -4,9 +4,11 @@ There are 4 parts: (I) for the system assessment task (II) for the system improv
 
 ## I. System Assessment Task
 
+An assessment of a legacy architecture for the weather forecasting platform.
+
 ## a. Introduction
  
-
+After analysis of the legacy architecture, I found major weak points and a couple of strong points:
 
 ![Alt text](https://i.ibb.co/WgmR2CT/Screenshot-2024-03-04-at-14-41-03.png "Optional title")
 
