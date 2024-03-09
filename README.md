@@ -60,7 +60,7 @@ This approach reduces the immediate overheads related to infrastructure manageme
 
 ## c. Conclusion: Legacy Architecture Evaluation
 
-### Average latency: *3 minutes*/hour and growing exponentially
+### Average latency: *3 minutes*/hour and growing linearly then exponentially
 
 Kafka's processing is near-instantaneous, maximum 1 second on an hour of streaming. With SQL loaders adding roughly 5 seconds (common query times against Postgres + redis), the event processor contributing about 5 seconds to merge data sources. 
 Data preprocessors and processors taking 180 seconds (based on the baseline calculation of the coding task divided by 3 processors), data enrichers adding another 5 seconds, and the data sink taking around 5 seconds to write 15k cities forecast data in bulk in SQL.
