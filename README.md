@@ -26,10 +26,11 @@ equates to approximately 0.024 MB/s (megabytes per second) which is 85.83 MB per
 
 With a moderate network speed (1 Gbps), the read speeds might be closer to 100-150 MB/s, and network throughput would be about 125 MB/s. In this case, querying 700GB could take approximately 1.5 to 2 hours (!) which is not acceptable to simply update the cache and will lead to data freshness issue and decrease of performance.
 
-### 3. Event Processor Vulnerability
+### 3. The Event Processor is a Vulnerability and a Bottleneck
 The event processor, tasked with managing an excessive number of input streams, emerges as another single point of failure. This overburdening raises concerns about the system's ability to maintain reliable performance under strain.
 
-### 4. Latency Induced by SQL Databases
+The event processor's role as a central hub for numerous input streams introduces significant risk, making it a bottleneck that could undermine the system's robustness and agility. This configuration, by centralizing too much logic and responsibility, limits the potential for efficient data handling and real-time responsiveness. Adopting a more modular approach, where duties are distributed among specialized components, could substantially improve the system's ability to evolve and handle diverse workloads with greater resilience.
+### 4. Latency and Inefficiency Induced by SQL Databases
 Incorporating SQL databases within a streaming architecture inherently introduces latency. This design choice can significantly hinder the real-time processing capabilities essential for the platform's effectiveness and responsiveness.
 
 To ensure scalability and performance for a database servicing 1000 API users, employing a combination of read replicas, database sharding, caching mechanisms, load balancing, and auto-scaling is essential. These strategies collectively enhance query performance, reduce load on the primary database, ensure high availability, and enable the system to adapt dynamically to varying demand levels, thus maintaining a high-quality user experience as usage grows.
@@ -39,10 +40,11 @@ No sign of such database optimizations in the architecture schema!
 ### 5. Complexity from Excessive Service Layers
 The architecture's reliance on numerous artificial service layers not only adds unnecessary complexity but also predisposes the system to increased latency. Simplifying these layers could enhance performance and reduce the risk of bottlenecks.
 
+By doing so, the system can achieve a leaner, more efficient operational model, thereby mitigating the potential for delays and improving data throughput. Also, the queuing system between each steps seems a bit too artificial.
+
 ### 6. Overdiversification of Technologies
 The platform's strategy of employing a wide array of technologies, while indicative of versatility, suggests a lack of focus that could complicate maintenance and integration. Streamlining the technology stack may improve efficiency and cohesiveness across the system.
-
-
+This overdiversification can lead to increased overhead in both training for technical staff and in the complexity of operations. A more unified and carefully selected technology stack would not only ease the management burden but also enhance the system’s overall reliability and scalability, making it more adaptable to future needs and simplifications.
 
 ## b. Strengths
 
