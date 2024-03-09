@@ -1,5 +1,7 @@
 # Trumid Take Home Task
 
+There are 4 parts: (I) for the system assessment task (II) for the system improvement task (III) for the code optimization task and (IV) for the additional features.
+
 ## I. System Assessment Task
 
 ## a. Introduction
