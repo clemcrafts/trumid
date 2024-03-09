@@ -58,11 +58,28 @@ A single virtual machine model simplifies the operational aspect of the applicat
 This approach reduces the immediate overheads related to infrastructure management, network configuration, and services syncrhonization, which are inherent in distributed systems. 
 
 
-## c. Conclusion
-Upon examining the system's architecture and operational strategies, 
-it is clear that while there are occasional strengths, including Docker utilization, workload distribution there and there, and infrastructure simplicity, there are critical areas that necessitate improvement. 
+## c. Conclusion: Legacy Architecture Evaluation
 
-The identified weaknesses, such as the single point of failure, inefficient data reloading practices, vulnerabilities in event processing, latency issues, excessive service layer complexity, and overdiversification of technologies, underline the need for a strategic overhaul. Addressing these challenges will not only mitigate risks but also enhance the system's overall scalability, performance, and reliability, thereby ensuring it can effectively meet current and future demands.
+### Average latency: *3 minutes*/hour and growing exponentially
+
+Kafka's processing is near-instantaneous, maximum 1 second on an hour of streaming. With SQL loaders adding roughly 5 seconds (common query times against Postgres + redis), the event processor contributing about 5 seconds to merge data sources. 
+Data preprocessors and processors taking 180 seconds (based on the baseline calculation of the coding task divided by 3 processors), data enrichers adding another 5 seconds, and the data sink taking around 5 seconds to write 15k cities forecast data in bulk in SQL.
+We add 20% of network latency and get around 3 minutes.
+
+### Maximum Throughput: 10 to 20 Mb/second
+Without detailed performance benchmarks, it's challenging to provide an accurate number, but it's clear that the single VM setup and potential inefficiencies in data processing and storage could limit the system's maximum throughput to a point where it might struggle with significantly increased load.
+Assuming that each stage is optimized but acknowledging the limitations of processing power and database I/O in a typical virtual machine environment, a realistic maximum throughput for this architecture could be around 10 to 20 MB/s.
+
+### Cloud Costs per Year: $5000
+
+For a VM equipped with 8 vCPUs and 32 GB RAM, you'd typically see expenses between $2,000 and $3,000. Adding to this, 1 TB of SSD storage for Redis would cost around $100 to $200. Networking might also add $100 to $300 to the bill. Then, factoring in scalable PostgreSQL storage, essential for managing the forecast data and historical records, could push the total upwards by an additional $1,000 to $2,000. Altogether, this integrated approach suggests an annual expenditure ranging from $3,200 to $5,500, underscoring the critical balance between system capability and cost management.
+
+
+| Metric               | Expectation                                                                                                                               |
+|----------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| **Average Latency**  | 3 minutes/hour and growing exponentially                                                                                           |
+| **Throughput**       | 10 to 20 Mb/second                                                                                                            |
+| **Cloud Costs**      | $5000 for VM, additional costs for storage and networking                        |
 
 ## II. System Improvement Task
 

@@ -18,8 +18,7 @@ from marshmallow import ValidationError
 
 
 def calculate_rolling_heat_index_optimized(
-    readings: typing.List[dict], rolling_freq: str = "1D"
-) -> typing.List[dict]:
+        readings: typing.List[dict], rolling_freq: str = "1D") -> typing.List[dict]:
     """
     Calculate the rolling heat index for a list of temperature and humidity
     readings.
@@ -73,9 +72,7 @@ def calculate_rolling_heat_index_optimized(
     return df.to_dict("records")
 
 
-def calculate_heat_index_optimized(
-    temperature: np.ndarray, humidity: np.ndarray
-) -> np.ndarray:
+def calculate_heat_index_optimized(temperature: np.ndarray, humidity: np.ndarray) -> np.ndarray:
     """
     Vectorized version of heat index calculation, optimized with pre-calculated squares.
 
