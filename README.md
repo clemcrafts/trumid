@@ -225,6 +225,27 @@ Utilizing Avro schema for data validation introduces a high level of data qualit
 
 Together, these measures significantly enhance the reliability and quality of data within the system, crucial for accurate weather forecasting.
 
+
+## 3. Conclusion: New Architecture Evaluation
+
+
+### Average latency: *3 seconds*/hour and stable over time
+Over an hour of streaming, the latency would be the sum of the Kafka latency, the Flink latency and the network effects.
+Because of Kafka and Flink being extremely low latency, we account for 1 second each and ads another second of network effect.
+
+### Maximum Throughput: 350Mb/second with auto-scaling on
+350k/messages per second assuming 1kb per message gives around 350Mb/second with is around 35x the legacy architecture.
+
+### Cloud Costs per Year: $1000
+
+
+| Metric               | Expectation                                                                                                                               |
+|----------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| **Average Latency**  | 3 seconds/hour and stable                                                                                           |
+| **Throughput**       | 350Mb/second                                                                                                            |
+| **Cloud Costs**      | $1000 on AWS                       |
+
+
 # III. Code Optimization Task
 
 ## 1. Introduction
