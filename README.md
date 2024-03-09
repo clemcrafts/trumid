@@ -89,14 +89,58 @@ The legacy system would be down in a couple of hours due to (1) exceeding VM RAM
 
 The new architecture provides the following benefits for scalability:
 
-### a. Microservices split fixing the single point of failure 
+### a. Exit virtual machine running docker-compose in production 
 
-First of all, scalability can be seen as a removal of the single point of failure.
+In the legacy architecture, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
+
+We suggest a service split allowing different scaling strategies and resilience in general:
+
+![Alt text](https://i.ibb.co/RHkVg6K/Screenshot-2024-03-09-at-16-08-34.png "Services")
+
 Here, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
 
-### b. Move from batching to streaming paradigm
+### b. Move from batching to streaming paradigm via Flink
 Batching does not really scale because it forces you to consider batch of data in a suboptimal way when streaming technologies do that for you at a lower level under the hood.
+Also, it seems like the application is not leveraging any distributed processing and Flink is great for that, mixing functional programming and distributed cumputations.
 
+Here is a snippet of what could be done, keying by city, windowing for every minute:
+
+
+```
+// Define a Flink Streaming Execution Environment
+final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+// Configure source, e.g., from a Kafka topic
+DataStream<String> input = env.addSource(new FlinkKafkaConsumer<>("weather_input_topic", new SimpleStringSchema(), properties));
+
+// Parse the input stream to a WeatherData type
+DataStream<WeatherData> parsedStream = input.map(value -> {
+    return new ObjectMapper().readValue(value, WeatherData.class);
+}).returns(WeatherData.class);
+
+// Assign timestamps and watermarks
+DataStream<WeatherData> timestampedStream = parsedStream
+        .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<WeatherData>(Time.seconds(5)) {
+            @Override
+            public long extractTimestamp(WeatherData weatherData) {
+                return weatherData.getTimestamp();
+            }
+        });
+
+// Key by city and apply window
+DataStream<WeatherData> windowedStream = timestampedStream
+        .keyBy(WeatherData::getCity)
+        .window(TumblingEventTimeWindows.of(Time.minutes(1)))
+        .apply(new HeatIndexCalculation());
+
+// Sink, e.g., to another Kafka topic or a database
+windowedStream.addSink(new FlinkKafkaProducer<>("forecast_output_topic", new WeatherDataSchema(), properties));
+
+// Execute the Flink job
+env.execute("Heat Index Calculation Job");
+```
+
+I've contributed to build the entire realtime recommendation system with Flink for the TikTok-like video app Triller (https://triller.co/) and it was stunning in terms of performance. 
 
 ### c. Auto-scaling at multiple levels
 The use of Kubernetes is duplicating the number of Flink clusters, allows the forecasting service to auto-scale at 2 levels.
