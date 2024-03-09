@@ -26,7 +26,6 @@ execution_times = {
 
 for size in dataset_sizes:
     config = dataset_configurations[size]
-    print(f"Generating {size} dataset...")
     data = generate_test_data(config['start_at'], config['end_at'],
                               config['freq'])
 
@@ -61,8 +60,5 @@ ax.set_title('Heat Index Calculation Time by Method and Dataset Size')
 ax.set_xticks([p + bar_width / 2 for p in index])
 ax.set_xticklabels(dataset_sizes)
 ax.legend()
-
-print(execution_times)
-
 plt.tight_layout()
 plt.show()
