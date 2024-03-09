@@ -166,8 +166,16 @@ persisted to disk as states/checkpoints to finally be stored in S3 (for example)
 ### a. Enhanced Low-Latency Processing with Apache Flink
 Apache Flink stands out as a formidable stream processing framework, renowned for its ability to deliver high performance, ensure system availability, and support real-time application requirements. Its distributed nature and efficient processing capabilities significantly reduce latency, eliminating the need for high-latency intermediary layers and streamlining the data flow from ingestion to output.
 
+How fast? Up to 400k messages/second.
+
+ <img src="https://i.ibb.co/1z4rwZC/Screenshot-2024-03-09-at-16-32-10.png" width="400" alt="Latency" style="display: block; margin-left: auto; margin-right: auto;">
+
 ### b. Streamlined Data Synchronization with Connectors
 Integrating directly with data sources through connectors, Flink ensures seamless and synchronized data ingestion. This approach not only enhances data flow efficiency but also supports real-time processing needs by minimizing delays in data availability and processing.
+
+It's easy to create a Postgres sink based on a Kafka topic in concluent, see: https://docs.confluent.io/cloud/current/connectors/cc-postgresql-sink.html.
+
+![Alt text](https://i.ibb.co/W59qQ3y/Screenshot-2024-03-09-at-17-03-38.png)
 
 ### c. Database Optimization via Sharding and Replication
 Implementing sharding alongside read-only replicas for the database layer significantly boosts the system's performance and availability. Sharding distributes data across multiple databases to balance the load and improve response times, while read-only replicas allow for efficient query handling, especially for read-intensive operations.
@@ -186,12 +194,6 @@ The introduction of lower environments (such as Development, Testing, and Stagin
 ### c. Robust Data Validation with Avro Schema and Dead Letter Queue Mechanism
 Utilizing Avro schema for data validation introduces a high level of data quality assurance by enforcing data structure and type conformity. This mechanism ensures that only correctly formatted data flows through the processing pipeline, reducing errors and inconsistencies. Furthermore, the implementation of a dead letter queue captures and isolates problematic data for further analysis and correction, preventing minor issues from escalating into major disruptions. Together, these measures significantly enhance the reliability and quality of data within the system, crucial for accurate weather forecasting.
 
-
-## 3. Monitoring Improvement
-
-### a. Microservices allows granular monitoring and alerting
-
-It's now possible to monitor CPU, memory and latency by component (database, forecasting service, api, etc)
 
 # III. Code Optimization Task
 
