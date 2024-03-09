@@ -177,8 +177,16 @@ It's easy to create a Postgres sink based on a Kafka topic in concluent, see: ht
 
 ![Alt text](https://i.ibb.co/W59qQ3y/Screenshot-2024-03-09-at-17-03-38.png)
 
-### c. Database Optimization via Sharding and Replication
+### c. Database Optimization via Sharding/Schemas and Read-only Replicas
 Implementing sharding alongside read-only replicas for the database layer significantly boosts the system's performance and availability. Sharding distributes data across multiple databases to balance the load and improve response times, while read-only replicas allow for efficient query handling, especially for read-intensive operations.
+
+For example, a good idea is to create a read-replica per region depending on where the customers of the application are to minimize latency for users.
+
+The master read/write instance is used by the Kafka sink and the read replica(s) by the API when users are querying the data.
+
+![Alt text](https://i.ibb.co/gyrBHXV/Screenshot-2024-03-09-at-17-12-24.png)
+
+It's a way to optimize latency and throughput for data so write and read are handled by different DB instances.
 
 ### d. Scalable API with Horizontal Scaling and Caching
 The API layer is designed for scalability, employing horizontal scaling to accommodate varying loads seamlessly. By adding more instances as demand increases, the system ensures consistent performance under different conditions. Additionally, strategic use of caching minimizes direct hits to the database for frequently requested data, further enhancing the API's responsiveness and reducing latency.
