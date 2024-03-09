@@ -264,6 +264,39 @@ For the code optimization task, we optimized the code, provided a proof that the
 integrated the test in a CI/CD with various sizes of datasets and tests (unit, integration, load), added a schema 
 validation, dockerized an application around it and prepared a placeholder for deployment in Github actions.
 
+If you want to run it on your local...:
+
+```
+virtualenv env -p python3
+pip install -r src/app/requirements.txt
+```
+
+To run the unit and integration tests:
+
+```
+pip install -r tests/requirements.txt
+python -m pytest tests
+```
+
+To run the end-2-end tests:
+
+```
+behave tests/end2end
+```
+
+To run a constant batch of randomnized data as an app:
+
+```
+python -m src.app.run
+```
+
+To run the docker image instead:
+
+```
+docker build -f src/app/Dockerfile -t weather-app .
+docker run -p 8000:80 weather-app
+```
+
 ## 2. Code optimization
 
 ### a. Vectorize calculations with pandas

@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r src/app/requirements.txt
 
 EXPOSE 80
 
-CMD ["python", "run.py"]
+CMD ["python", "-m", "src.app.run"]
