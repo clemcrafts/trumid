@@ -368,9 +368,12 @@ In the same way a payment processing doesn't go through straight away, a weather
 ## d. Conclusion: New Architecture Evaluation
 
 
-### Average latency: *3 seconds*/hour and stable over time
+### Average latency: *4 seconds*/hour and stable over time
 Over an hour of streaming, the latency would be the sum of the Kafka latency, the Flink latency and the network effects.
-Because of Kafka and Flink being extremely low latency (1-2ms max for one message), we account for 1 second for an hour of streaming and ad another second of network effect.
+Because of Kafka and Flink being extremely low latency (1-2ms max for one message), we account for 1 second for an hour of streaming. 
+The forecasting algorithm being mapped-reduced and vectorized (see example in the code optimization task), we account for an extra second of processing instead of 180 (!).
+Finally, we ad another second of network effects, lower due to less components interacting directly with one another. Total: 4 seconds latency over an hour of run.
+More importantly, the growing amount of data doesn't penalize the platform: the latency is stable over time.
 
 ### Maximum Throughput: aorund 340Mb/second with auto-scaling on
 350k messages per second assuming 1kb per message gives around 340Mb/second with is around 34x the legacy architecture.
@@ -387,7 +390,7 @@ Therefore, when these individual service costs are aggregated—$19,272 for MSK,
 
 | Metric               | Expectation                                                                                                                               |
 |----------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| **Average Latency**  | 3 seconds/hour and stable                                                                                           |
+| **Average Latency**  | 4 seconds/hour and stable                                                                                           |
 | **Throughput**       | 354Mb/second                                                                                                            |
 | **Cloud Costs**       | $20000 per year on AWS                         |
 
