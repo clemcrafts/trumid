@@ -1,57 +1,60 @@
 name: CI/CD Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-        cache: 'pip'
-    - name: Install dependencies
-      run: |
-        pip install -r src/app/requirements.txt
-        pip install -r tests/requirements.txt
-    - name: Run unit tests
-      run: pytest tests/unit
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          pip install -r src/app/requirements.txt
+          pip install -r tests/requirements.txt
+      - name: Run unit tests
+        run: pytest tests/unit
 
   integration-tests:
     needs: unit-tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-        cache: 'pip'
-    - name: Install dependencies
-      run: |
-        pip install -r src/app/requirements.txt
-        pip install -r tests/requirements.txt
-    - name: Run integration tests
-      run: pytest tests/integration
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          pip install -r src/app/requirements.txt
+          pip install -r tests/requirements.txt
+      - name: Run integration tests
+        run: pytest tests/integration
 
   end-to-end-tests:
     needs: integration-tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-        cache: 'pip'
-    - name: Install dependencies
-      run: |
-        pip install -r src/app/requirements.txt
-        pip install -r tests/requirements.txt
-    - name: Run end-to-end tests
-      run: behave tests/end-2-end
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          pip install -r src/app/requirements.txt
+          pip install -r tests/requirements.txt
+      - name: Run end-to-end tests
+        run: behave tests/end-2-end
 
   deploy-to-dev:
     needs: end-to-end-tests
