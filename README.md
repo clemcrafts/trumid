@@ -127,9 +127,9 @@ The CI/CD is running static code analysis, unit, integration and component test 
 
 ### b. Scalability and Performance Improvements
 
-The assumptions behind the scalability improvements is that the system might have to cope with higher frequency data in the future like a new data point per second for all 15k cities and bigger payloads increasing the need for high throughput.
-For example, we want the system to potentially be able to cope with one data point every 5 seconds for all 15k cities which is around 300Mb/s based on one data point being around 100 bytes.
-We also want the system to be low latency (~seconds per hour of run) and more importantly to have a stable latency over time: it's not the case of the legacy architecture that is poised to fail.
+The assumptions behind the scalability improvements are that the system might have to cope with higher data point frequency in the future and needs to be stable over time.
+For example, we want the system to potentially be able to cope with one data point every 5 seconds for all 15k cities which is around 300Mb/s based on 1 data point being around 100 bytes.
+We also want the system to be low latency (~seconds per hour of run) and more importantly to have a stable latency over time: it's not the case of the legacy architecture that has a growing latency and is poised to fail.
 
 #### 1. Exit virtual machine running docker-compose in production 
 
