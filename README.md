@@ -48,16 +48,22 @@ This overdiversification can lead to increased overhead in both training for tec
 
 ## b. Strengths
 
-### 1. The Application is Leveraging Docker
-The application capitalizes on Docker, encapsulating parts of the application for better control even as it currently operates primarily through docker-compose.
-It potentially opens the door for more complex orchestration solutions as the application grows and its needs become more scalable.
+### 1. The Application is Using the Docker technology
 
-### 2. Multiple containers share the processing and pre-processing load
-Using multiple containers of the same service to distribute the (pre-)processing workload enhances efficiency but also lays 
-the groundwork for potential horizontal auto-scaling later: auto-scaling would be ensuring that the platform can adjust to varying data demands.
+The application's deployment strategy involves the use of Docker, ensuring that it runs within a container instead of being directly installed on the servers. 
 
-### 3. The application is using a performant distributed message bus 
-The application is using Kafka which is a very good choice for a real-time weather forecasting platform offering high throughput, fault tolerance and great scalability.
+This is not ideal and come with some red flags (like using docker-compose in production) but is a first step towards better containerization and orchestration as the OS, the libraries and the services are encapsulated in a full controlled image.
+
+### 2. Horizontal Scaling for Processors and Pre-Processors
+
+The system employs horizontal scaling for both processors and pre-processors, indicating an architecture designed to manage an increasing workload by adding more processes to the mix. 
+
+This setup allows for the efficient preparation of data and calculation of forecasts, marking the onset of horizontal scaling. By distributing tasks across multiple processes, the system can handle larger volumes of data more effectively, laying the groundwork for scalable growth.
+
+### 3. The Application Uses a Highly Efficient Message Bus
+
+The application utilizes Kafka as its message bus, an excellent selection for a real-time weather forecasting platform. Kafka's strengths in providing high throughput, fault tolerance, and significant scalability align well with the demands of processing and distributing real-time weather data efficiently. 
+This technology choice underscores the platform's commitment to robust and reliable data handling capabilities.
 
 ### 4. Simplicity of Deployment and Maintenance
 A single virtual machine model simplifies the operational aspect of the application. It avoids the complexities associated with synchronizing multiple services across different servers or clusters. 
