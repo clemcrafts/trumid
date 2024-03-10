@@ -377,8 +377,9 @@ Finally, we add another second of network effects, lower due to less components 
 More importantly, the growing amount of data doesn't penalize the platform: the latency is stable over time.
 
 ### Maximum Throughput: around 340Mb/second with auto-scaling on
-350k messages per second assuming 1kb per message gives around 340Mb/second with is around 34x the legacy architecture.
-The 350k messages per second with 1kb/message comes from the literature on Flink (see the details in the "Enhanced Low-Latency Processing with Apache Flink" section of this Readme).
+Flink can process 350k messages per second assuming 1kb per message (in the study I read) which gives around 340Mb/second: it is around 34x the legacy architecture.
+However, yes, the 350k messages per second with 1kb/message only comes from the literature on Flink (see the details in the "Enhanced Low-Latency Processing with Apache Flink" section of this Readme).
+From my experience, it's realistic. I used to work with Flink handling at the very least this throughput.
 
 ### Cloud Costs per Year: $20000
 For Amazon MSK, the cost is $0.20 per hour for a small cluster. Amazon EMR, used for a basic Flink setup, comes at $0.25 per hour. Amazon EKS management is priced at $0.10 per hour. Summing these costs, the total hourly rate for one environment is $0.55. Multiplying this rate by the number of hours in a year (8,760) and then by four to account for each environment, the annual cost for MSK, EMR, and EKS services alone reaches approximately $19,272.
