@@ -74,9 +74,9 @@ This approach reduces the immediate overheads related to infrastructure manageme
 
 ### Average latency: *3 minutes*/hour and growing linearly then exponentially
 
-Kafka's processing is near-instantaneous, maximum 1 second on an hour of streaming. With SQL loaders adding roughly 5 seconds (common query times against Postgres + redis), the event processor contributing about 5 seconds to merge data sources. 
+Kafka's processing is near-instantaneous, maximum 1 second on an hour of the service batching forecasts. With SQL loaders adding roughly 5 seconds (common query times against Postgres + redis), the event processor contributing about 5 seconds to merge data sources. 
 Data preprocessors and processors taking 180 seconds (based on the baseline calculation of the coding task divided by 3 processors), data enrichers adding another 5 seconds, and the data sink taking around 5 seconds to write 15k cities forecast data in bulk in SQL.
-We add 20% of network latency and get around 3 minutes.
+We add 20% of network latency due to the very high number of components (queues, processors, cache, loaders, database, consumers) and get around 3 minutes of latency for an hour of run.
 
 ### Maximum Throughput: 10 to 20 Mb/second
 Without detailed performance benchmarks, it's challenging to provide an accurate number, but it's clear that the single VM setup and potential inefficiencies in data processing and storage could limit the system's maximum throughput to a point where it might struggle with significantly increased load.
