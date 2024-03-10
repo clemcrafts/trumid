@@ -1,6 +1,6 @@
 # Trumid Take Home Task
 
-There are 4 parts: (I) for the system assessment task (II) for the system improvement task (III) for the code optimization task and (IV) for the additional features.
+There are 4 parts: (I) for the system assessment task (II) for the system improvement task (III) for the code optimization task and (IV) for the optional additional features task.
 
 ## I. System Assessment Task
 
@@ -465,7 +465,7 @@ stream of randomnized data):
 ```
  
 
-# IV. System Optional Task
+# IV. Optional Additional Features Task
 
 ## 1. BI Reporting Dashboard With Airflow and Tableau
 
