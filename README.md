@@ -95,7 +95,9 @@ For a VM equipped with 8 vCPUs and 32 GB RAM, you'd typically see expenses betwe
 
 ## II. System Improvement Task
 
-![Alt text](https://i.ibb.co/0h01Ybv/Screenshot-2024-03-05-at-18-23-07.png "Optional title")
+My new proposed architecture for the weather forecasting platform is as follows:
+
+![Alt text](https://i.ibb.co/1mCkHPk/Screenshot-2024-03-10-at-13-50-14.png "Optional title")
 
 
 This involves a couple of microservices present on the architecture diagram (forecasting service, API service) and some others 
