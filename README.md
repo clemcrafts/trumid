@@ -185,12 +185,13 @@ An experiment is available on the Flink's blog, showing how an increase of lag o
 
 ![Alt text](https://i.ibb.co/yyFxs6L/Screenshot-2024-03-08-at-19-40-27.png "Flink Autoscaling")
 
-### d. The SQL database is not a bottleneck anymore
-The SQL insertion and querying is not in the middle of the process anymore. The hot data is synchronized in-memory and asynchroneously 
-persisted to disk as states/checkpoints to finally be stored in S3 (for example) for backups:
+### d. Queues/Processors replaced by State-Based Distributed Processing
+
+Replacing traditional queues and processors with state-based distributed processing, as facilitated by Flink's in-memory state management, marks a significant leap in performance efficiency. Flink's approach minimizes the need for data to traverse multiple, distinct processing layers, allowing for faster, more efficient computation. This model ensures data locality and reduces latency, as state is managed and processed closer to the data, eliminating bottlenecks associated with separate, non-distributed processors and improving overall system responsiveness.
 
 ![Alt text](https://i.ibb.co/9s1gzvm/Screenshot-2024-03-08-at-20-59-44.png "Flink States")
 
+The S3 states can be plugged to a warehouse for querying or synchronized to various key-values technologies.
 
 ## 2. Performance Improvements
 
