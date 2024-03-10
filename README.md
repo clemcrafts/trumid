@@ -305,7 +305,7 @@ pip install -r tests/requirements.txt
 python tests/comparison.py
 ```
 
-To deploy the application: actions > CI/CD pipeline
+To deploy the application: actions > CI/CD Pipeline > Run workflow
 
 ![Alt text](https://i.ibb.co/1mJ7p78/Screenshot-2024-03-10-at-00-07-47.png)
 
