@@ -617,6 +617,8 @@ We could imagine that an Airflow instance would pull data by region from the for
 
 ![Alt text](https://i.ibb.co/9gtZ7Fm/Screenshot-2024-03-07-at-13-55-48.png "Optional title")
 
+Users (internal or external) can be given read-only access to dashboards by region and enjoy advanced weather analytics.
+
 ## 2. Advanced system monitoring via Prometheus
 
 To monitor resources and system-level metrics, Prometheus and Grafana are the elephants in the room:
