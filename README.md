@@ -65,7 +65,7 @@ This setup allows for the efficient preparation of data and calculation of forec
 The application utilizes Kafka as its message bus, an excellent selection for a real-time weather forecasting platform. Kafka's strengths in providing high throughput, fault tolerance, and significant scalability align well with the demands of processing and distributing real-time weather data efficiently. 
 This technology choice underscores the platform's commitment to robust and reliable data handling capabilities.
 
-### 4. Simplicity of Deployment and Maintenance
+### 4. Simplicity ad Cost of Deployment and Maintenance
 A single virtual machine model simplifies the operational aspect of the application. It avoids the complexities associated with synchronizing multiple services across different servers or clusters. 
 This approach reduces the immediate overheads related to infrastructure management, network configuration, and services syncrhonization, which are inherent in distributed systems. 
 
@@ -224,9 +224,74 @@ The master read/write instance is used by the Kafka sink and the read replica(s)
 
 It's a way to optimize latency and throughput for data so write and read are handled by different DB instances.
 
-#### 8. Scalable API with Horizontal Scaling and Caching
+#### 8. Scalable API with Horizontal Scaling
 The API layer is designed for scalability, employing horizontal scaling to accommodate varying loads seamlessly. By adding more instances as demand increases, the system ensures consistent performance under different conditions. Additionally, strategic use of caching minimizes direct hits to the database for frequently requested data, further enhancing the API's responsiveness and reducing latency.
+To auto-scale an API on EKS, I would use the Kubernetes Horizontal Pod Autoscaler (HPA) to automatically scale the number of pods in a deployment or replica set based on observed CPU utilization or other selected metrics. It's possible to define the scaling policies directly in the Helm chart, which is a package containing all necessary resources and configurations to deploy the application on Kubernetes.
 
+For example, a `hpa.yaml` defining the auto-scaling setup:
+
+```
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.app.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.app.name }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.cpuUtilizationPercentage }}
+```
+
+and a values.yaml containing the auto-scaling strategy for the API:
+
+```
+app:
+  name: weather-forecast-api
+replicaCount: 1
+image:
+  repository: weather-forecast-api
+  tag: latest
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+autoscaling:
+  minReplicas: 2
+  maxReplicas: 10
+  cpuUtilizationPercentage: 80
+
+```
+
+#### 9. Asynchronous Queries to Optimize Serving Further
+
+To go a step further, when a user is requesting the forecast for a city, the API should handle the query asynchronously as the API will be I/O-bound.
+
+Here is an illustrative snippet in Python (FastAPI):
+
+```
+@app.get("/forecast/{city_name}")
+async def get_forecast(city_name: str):
+    city = cities_db.get(city_name.title())
+    if not city:
+        raise HTTPException(status_code=404, detail="City not found")
+    forecast = await fetch_weather_forecast(city["lat"], city["lon"])
+    return {
+        "city": city_name,
+        "forecast": forecast
+    }
+```
 ## c. Reliability and Data Quality Improvements
 
 #### 1. Disaster Recovery and Seamless Deployment Capabilities
