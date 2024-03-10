@@ -365,10 +365,11 @@ In the same way a payment processing doesn't go through straight away, a weather
 
 ### Average latency: *3 seconds*/hour and stable over time
 Over an hour of streaming, the latency would be the sum of the Kafka latency, the Flink latency and the network effects.
-Because of Kafka and Flink being extremely low latency, we account for 1 second each and ads another second of network effect.
+Because of Kafka and Flink being extremely low latency (1-2ms max for one message), we account for 1 second for an hour of streaming and ad another second of network effect.
 
-### Maximum Throughput: 350Mb/second with auto-scaling on
-350k/messages per second assuming 1kb per message gives around 350Mb/second with is around 35x the legacy architecture.
+### Maximum Throughput: aorund 340Mb/second with auto-scaling on
+350k messages per second assuming 1kb per message gives around 340Mb/second with is around 34x the legacy architecture.
+The 350k messages per second with 1kb/message comes from the literature on Flink (see the details in the "Enhanced Low-Latency Processing with Apache Flink" section of this Readme).
 
 ### Cloud Costs per Year: $20000
 For Amazon MSK, the cost is $0.20 per hour for a small cluster. Amazon EMR, used for a basic Flink setup, comes at $0.25 per hour. Amazon EKS management is priced at $0.10 per hour. Summing these costs, the total hourly rate for one environment is $0.55. Multiplying this rate by the number of hours in a year (8,760) and then by four to account for each environment, the annual cost for MSK, EMR, and EKS services alone reaches approximately $19,272.
@@ -382,7 +383,7 @@ Therefore, when these individual service costs are aggregated—$19,272 for MSK,
 | Metric               | Expectation                                                                                                                               |
 |----------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | **Average Latency**  | 3 seconds/hour and stable                                                                                           |
-| **Throughput**       | 350Mb/second                                                                                                            |
+| **Throughput**       | 354Mb/second                                                                                                            |
 | **Cloud Costs**       | $20000 per year on AWS                         |
 
 
