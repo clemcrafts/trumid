@@ -372,10 +372,10 @@ In the same way a payment processing doesn't go through straight away, a weather
 Over an hour of streaming, the latency would be the sum of the Kafka latency, the Flink latency and the network effects.
 Because of Kafka and Flink being extremely low latency (1-2ms max for one message), we account for 1 second for an hour of streaming. 
 The forecasting algorithm being mapped-reduced and vectorized (see example in the code optimization task), we account for an extra second of processing instead of 180 (!).
-Finally, we ad another second of network effects, lower due to less components interacting directly with one another. Total: 4 seconds latency over an hour of run.
+Finally, we add another second of network effects, lower due to less components interacting directly with one another. Total: 4 seconds latency over an hour of run.
 More importantly, the growing amount of data doesn't penalize the platform: the latency is stable over time.
 
-### Maximum Throughput: aorund 340Mb/second with auto-scaling on
+### Maximum Throughput: around 340Mb/second with auto-scaling on
 350k messages per second assuming 1kb per message gives around 340Mb/second with is around 34x the legacy architecture.
 The 350k messages per second with 1kb/message comes from the literature on Flink (see the details in the "Enhanced Low-Latency Processing with Apache Flink" section of this Readme).
 
