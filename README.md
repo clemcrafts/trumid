@@ -95,6 +95,9 @@ For a VM equipped with 8 vCPUs and 32 GB RAM, you'd typically see expenses betwe
 
 ## II. System Improvement Task
 
+### a. Introduction
+
+
 My new proposed architecture for the weather forecasting platform is as follows:
 
 ![Alt text](https://i.ibb.co/1mCkHPk/Screenshot-2024-03-10-at-13-50-14.png "Optional title")
@@ -111,7 +114,7 @@ The CI/CD is running unit, integration and component test against each docker im
 The first one is a constant high load of messages (2x production load) and the second one is a fast ramp up in load intensity so simulate a bottleneck leading to a faster than usual acceleration of messages.
 
 
-### 1. Scalability Improvements
+### b. Scalability and Performance Improvements
 
 The assumptions behind the scalability improvements is that the system might have to cope with higher frequency data in the future like a new data point per second for all 15k cities and bigger payloads increasing the need for high throughput.
 In that case we want the system to be able to generate up to 15k/messages per second. 
@@ -120,7 +123,7 @@ The legacy system would be down in a couple of hours due to (1) exceeding VM RAM
 
 The new architecture provides the following benefits for scalability:
 
-### a. Exit virtual machine running docker-compose in production 
+#### 1. Exit virtual machine running docker-compose in production 
 
 In the legacy architecture, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
 
@@ -130,7 +133,7 @@ We suggest a service split allowing different scaling strategies and resilience 
 
 Here, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
 
-### b. Move from batching to streaming paradigm via Flink
+#### 2. Move from batching to streaming paradigm via Flink
 Batching does not really scale because it forces you to consider batch of data in a suboptimal way when streaming technologies do that for you at a lower level under the hood.
 Also, it seems like the application is not leveraging any distributed processing and Flink is great for that, mixing functional programming and distributed cumputations.
 
@@ -173,7 +176,7 @@ env.execute("Heat Index Calculation Job");
 
 I've contributed to build the entire realtime recommendation system with Flink for the TikTok-like video app Triller (https://triller.co/) and it was stunning in terms of performance. 
 
-### c. Auto-scaling with Flink and Kubernetes
+#### 3. Auto-scaling with Flink and Kubernetes
 The use of Kubernetes is duplicating the number of Flink clusters, allows the forecasting service to auto-scale at 2 levels.
 First, the flink job is scaling with load on different clusters.
 
@@ -185,7 +188,7 @@ An experiment is available on the Flink's blog, showing how an increase of lag o
 
 ![Alt text](https://i.ibb.co/yyFxs6L/Screenshot-2024-03-08-at-19-40-27.png "Flink Autoscaling")
 
-### d. Queues/Processors replaced by State-Based Distributed Processing
+#### 4. Queues/Processors replaced by State-Based Distributed Processing
 
 Replacing traditional queues and processors with state-based distributed processing, as facilitated by Flink's in-memory state management, marks a significant leap in performance efficiency. Flink's approach minimizes the need for data to traverse multiple, distinct processing layers, allowing for faster, more efficient computation. This model ensures data locality and reduces latency, as state is managed and processed closer to the data, eliminating bottlenecks associated with separate, non-distributed processors and improving overall system responsiveness.
 
@@ -193,23 +196,22 @@ Replacing traditional queues and processors with state-based distributed process
 
 The S3 states can be plugged to a warehouse for querying or synchronized to various key-values technologies.
 
-## 2. Performance Improvements
 
-### a. Enhanced Low-Latency Processing with Apache Flink
+#### 5. Enhanced Low-Latency Processing with Apache Flink
 Apache Flink stands out as a formidable stream processing framework, renowned for its ability to deliver high performance, ensure system availability, and support real-time application requirements. Its distributed nature and efficient processing capabilities significantly reduce latency, eliminating the need for high-latency intermediary layers and streamlining the data flow from ingestion to output.
 
 How fast? Up to 400k messages/second.
 
  <img src="https://i.ibb.co/1z4rwZC/Screenshot-2024-03-09-at-16-32-10.png" width="400" alt="Latency" style="display: block; margin-left: auto; margin-right: auto;">
 
-### b. Streamlined Data Synchronization with Connectors
+#### 6. Streamlined Data Synchronization with Connectors
 Integrating directly with data sources through connectors, Flink ensures seamless and synchronized data ingestion. This approach not only enhances data flow efficiency but also supports real-time processing needs by minimizing delays in data availability and processing.
 
 It's easy to create a Postgres sink based on a Kafka topic in concluent, see: https://docs.confluent.io/cloud/current/connectors/cc-postgresql-sink.html.
 
 ![Alt text](https://i.ibb.co/W59qQ3y/Screenshot-2024-03-09-at-17-03-38.png)
 
-### c. Database Optimization via Sharding/Schemas and Read-only Replicas
+#### 7. Database Optimization via Sharding/Schemas and Read-only Replicas
 Implementing sharding alongside read-only replicas for the database layer significantly boosts the system's performance and availability. Sharding distributes data across multiple databases to balance the load and improve response times, while read-only replicas allow for efficient query handling, especially for read-intensive operations.
 
 For example, a good idea is to create a read-replica per region depending on where the customers of the application are to minimize latency for users.
@@ -220,18 +222,18 @@ The master read/write instance is used by the Kafka sink and the read replica(s)
 
 It's a way to optimize latency and throughput for data so write and read are handled by different DB instances.
 
-### d. Scalable API with Horizontal Scaling and Caching
+#### 8. Scalable API with Horizontal Scaling and Caching
 The API layer is designed for scalability, employing horizontal scaling to accommodate varying loads seamlessly. By adding more instances as demand increases, the system ensures consistent performance under different conditions. Additionally, strategic use of caching minimizes direct hits to the database for frequently requested data, further enhancing the API's responsiveness and reducing latency.
 
-## 2. Reliability and data quality Improvements
+## c. Reliability and Data Quality Improvements
 
-### a. Disaster Recovery and Seamless Deployment Capabilities
+#### 1. Disaster Recovery and Seamless Deployment Capabilities
 The application incorporates a disaster recovery strategy, ensuring continuity of service and data integrity in the event of system failures. Coupled with methodologies for no-downtime deployments, this approach not only enhances system reliability but also maintains uninterrupted access for users, critical for real-time weather forecasting services.
 
-### b. Comprehensive Testing via Lower Environments
+#### 2. Comprehensive Testing via Lower Environments
 The introduction of lower environments (such as Development, Testing, and Staging) facilitates thorough testing and validation processes before any production release. This structured approach allows for the identification and resolution of issues in a controlled manner, significantly reducing the risk of introducing bugs or performance issues to the live environment. As a result, the overall reliability of the application is greatly improved, ensuring that updates enhance rather than compromise the user experience.
 
-### c. Robust Data Validation with Avro Schema and Dead Letter Queue Mechanism
+#### 3. Robust Data Validation with Avro Schema and Dead Letter Queue Mechanism
 Utilizing Avro schema for data validation introduces a high level of data quality assurance by enforcing data structure and type conformity. This mechanism ensures that only correctly formatted data flows through the processing pipeline, reducing errors and inconsistencies. Furthermore, the implementation of a dead letter queue captures and isolates problematic data for further analysis and correction, preventing minor issues from escalating into major disruptions.
 
 <img src="https://i.ibb.co/Tbph6m1/Screenshot-2024-03-09-at-19-07-39.png" width="400" alt="Latency" style="display: block; margin-left: auto; margin-right: auto;">
@@ -241,7 +243,7 @@ Utilizing Avro schema for data validation introduces a high level of data qualit
 Together, these measures significantly enhance the reliability and quality of data within the system, crucial for accurate weather forecasting.
 
 
-## 3. Conclusion: New Architecture Evaluation
+## d. Conclusion: New Architecture Evaluation
 
 
 ### Average latency: *3 seconds*/hour and stable over time
@@ -321,7 +323,7 @@ To deploy the application: actions > CI/CD Pipeline > Run workflow
 
 ## 2. Code optimization
 
-### a. Vectorize calculations with pandas
+### a. Vectorized Calculations with Pandas
 
 Pandas vectorization leverages highly optimized C and Cython operations under the hood, making data manipulation and mathematical operations 
 much faster and more efficient than iterating through rows with loops.
