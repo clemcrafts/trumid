@@ -128,11 +128,8 @@ The CI/CD is running static code analysis, unit, integration and component test 
 ### b. Scalability and Performance Improvements
 
 The assumptions behind the scalability improvements is that the system might have to cope with higher frequency data in the future like a new data point per second for all 15k cities and bigger payloads increasing the need for high throughput.
-In that case we want the system to be able to generate up to 15k/messages per second. 
-
-The legacy system would be down in a couple of hours due to (1) exceeding VM RAM (2) exceeding acceptable latency having to retrieve Gb of data from the results table on every batch (3) simply killing the database with read/write load that a single instance with no replica won't be able to handle while serving data to users.
-
-The new architecture provides the following benefits for scalability:
+For example, we want the system to potentially be able to cope with one data point every 5 seconds for all 15k cities which is around 300Mb/s based on one data point being around 100 bytes.
+We also want the system to be low latency (~seconds per hour of run) and more importantly to have a stable latency over time: it's not the case of the legacy architecture that is poised to fail.
 
 #### 1. Exit virtual machine running docker-compose in production 
 
