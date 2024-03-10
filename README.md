@@ -370,18 +370,20 @@ Because of Kafka and Flink being extremely low latency, we account for 1 second 
 ### Maximum Throughput: 350Mb/second with auto-scaling on
 350k/messages per second assuming 1kb per message gives around 350Mb/second with is around 35x the legacy architecture.
 
-### Cloud Costs per Year: $30000
-The cloud costs need to account for using Amazon MSK for Kafka, Amazon EMR for Flink, Amazon EKS for the API, along with S3 and RDS for PostgreSQL across four environments (Dev, QAT, Pre-Prod, Prod), with only the last two connected to live data, involves a more detailed calculation. These services, particularly when scaled for production workloads and redundancy, can significantly increase operational costs.
+### Cloud Costs per Year: $20000
+For Amazon MSK, the cost is $0.20 per hour for a small cluster. Amazon EMR, used for a basic Flink setup, comes at $0.25 per hour. Amazon EKS management is priced at $0.10 per hour. Summing these costs, the total hourly rate for one environment is $0.55. Multiplying this rate by the number of hours in a year (8,760) and then by four to account for each environment, the annual cost for MSK, EMR, and EKS services alone reaches approximately $19,272.
 
-Amazon MSK, EMR, EKS, S3, and RDS form a comprehensive cloud infrastructure for the project, with costs ranging from $0.20 per hour for a small Kafka cluster to $0.25 for a basic Flink setup, and an additional $0.10 per hour for EKS management. Storage and database services via S3 and RDS introduce variable costs based on usage, making efficient resource management crucial for controlling expenses.
+Regarding Amazon S3, with the data flow rate leading to an annual data volume of roughly 739.125 GB, the estimated cost for storage, based on a simplified rate of $0.023 per GB per month, totals approximately $204 for the year. This estimate does not account for additional potential costs like data transfer or request fees, focusing solely on storage.
 
-Considering these factors, a rough annual cloud cost estimation for a setup with these AWS services across four environments might range between $20,000 and $40,000, leaning towards the higher end if prioritizing redundancy, performance, and data volume.
+For Amazon RDS, assuming a generic monthly cost of $200 per environment for a moderately utilized instance (including compute, storage, and I/O operations), the total for all four environments over a year amounts to $9,600.
+
+Therefore, when these individual service costs are aggregated—$19,272 for MSK, EMR, and EKS services, $204 for S3 storage, and $9,600 for RDS—the total estimated annual cloud cost for operating across the four specified environments, considering the provided data flow constraint, is approximately $29,076. This comprehensive calculation demonstrates the combined impact of service costs on the overall cloud infrastructure expenditure.
 
 | Metric               | Expectation                                                                                                                               |
 |----------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | **Average Latency**  | 3 seconds/hour and stable                                                                                           |
 | **Throughput**       | 350Mb/second                                                                                                            |
-| **Cloud Costs**      | $30000 on AWS                       |
+| **Cloud Costs**       | $20000 per year on AWS                         |
 
 
 # III. Code Optimization Task
