@@ -305,6 +305,10 @@ pip install -r tests/requirements.txt
 python tests/comparison.py
 ```
 
+To deploy the application: actions > CI/CD pipeline
+
+![Alt text](https://i.ibb.co/1mJ7p78/Screenshot-2024-03-10-at-00-07-47.png)
+
 
 ## 2. Code optimization
 
