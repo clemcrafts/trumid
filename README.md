@@ -482,6 +482,8 @@ df["rolling_heat_index"] = df.groupby("city")["heat_index"].transform(
 ```
 
 ### c. Avoid re-calculating Operations
+The square of the temperature, the square of the humidity and the cross product or the two are used multiple times in the formula.
+No need to recalculate them each time, so we pre-compute them once.
 
 ```
 temp_square = temperature**2
@@ -499,6 +501,12 @@ return (
         + C9_HEAT_INDEX_COEFFICIENT * temp_square * humid_square
     )
 ```
+
+### d. What didn't work...
+I've tried various things that did not bring better performance.
+Caching, jit, asyncio (normal, as it's cpu-bound...), multithreading (normal, because of the GIL), Spark/Dask (normal, my local can't distribute computations).
+Happy to go through them during the call if needed.
+
 
 ## 3. Correctness Analysis 
 
