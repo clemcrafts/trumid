@@ -84,14 +84,19 @@ Assuming that each stage is optimized but acknowledging the limitations of proce
 
 ### Cloud Costs per Year: $5000
 
-For a VM equipped with 8 vCPUs and 32 GB RAM, you'd typically see expenses between $2,000 and $3,000. Adding to this, 1 TB of SSD storage for Redis would cost around $100 to $200. Networking might also add $100 to $300 to the bill. Then, factoring in scalable PostgreSQL storage, essential for managing the forecast data and historical records, could push the total upwards by an additional $1,000 to $2,000. Altogether, this integrated approach suggests an annual expenditure ranging from $3,200 to $5,500, underscoring the critical balance between system capability and cost management.
 
+
+For a VM on AWS tailored to handle intense CPU workloads, substantial memory demands, and significant SSD storage needs, we've modeled costs around specific services and configurations. 
+
+Opting for a `c5.2xlarge` instance to manage the CPU and memory requirements, supplemented with 500 GB of gp3 SSD storage for the VM and an additional 200 GB of SSD storage for an AWS RDS database instance, the monthly expenditure is estimated at approximately $373. 
+
+This detailed estimate breaks down into $170 for the c5.2xlarge compute instance, $40 for the EBS SSD storage, $73 for the RDS instance combined with its SSD storage needs, and $90 for data transfer costs. Annually, this brings the total to an estimated $4,476, reflecting a model that emphasizes both performance and capacity within the AWS ecosystem.
 
 | Metric               | Expectation                                                                                                                               |
 |----------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | **Average Latency**  | 3 minutes/hour and growing exponentially                                                                                           |
 | **Throughput**       | 10 to 20 Mb/second                                                                                                            |
-| **Cloud Costs**      | $5000 for VM, additional costs for storage and networking                        |
+| **Cloud Costs**      | $5000 per year                                    |
 
 ## II. System Improvement Task
 
