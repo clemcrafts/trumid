@@ -300,7 +300,49 @@ The application incorporates a disaster recovery strategy, ensuring continuity o
 #### 2. Comprehensive Testing via Lower Environments
 The introduction of lower environments (such as Development, Testing, and Staging) facilitates thorough testing and validation processes before any production release. This structured approach allows for the identification and resolution of issues in a controlled manner, significantly reducing the risk of introducing bugs or performance issues to the live environment. As a result, the overall reliability of the application is greatly improved, ensuring that updates enhance rather than compromise the user experience.
 
-#### 3. Robust Data Validation with Avro Schema and Dead Letter Queue Mechanism
+On lower test environment, on top of integration/unit/end-2-end tests, it's possible to use Locust to verify how the system behaves under high load.
+
+For example we could run a load test before any deployment on 1500 users with a spawn rate of 100 users per second and verify that the average response time is below 200ms:
+```
+from locust import HttpUser, task, between, events
+import math
+import time
+
+USERS_COUNT = 1500
+USERS_SPAWNING_RATE = 100
+AVERAGE_MAX_RESPONSE_TIME_MS = 200
+
+start_time = time.time()
+
+def calculate_users_to_spawn():
+    # Exponential formula to increase users. Adjust as necessary.
+    elapsed = time.time() - start_time
+    return min(USERS_COUNT, int(math.exp(elapsed / 60) - 1))
+
+@events.test_start.add_listener
+def on_test_start(environment, **kwargs):
+    environment.runner.start(1, spawn_rate=USERS_SPAWNING_RATE)
+
+@events.request_success.add_listener
+def on_request_success(request_type, name, response_time, response_length, **kwargs):
+    global total_response_time, total_requests
+    total_response_time += response_time
+    total_requests += 1
+    average_response_time = total_response_time / total_requests
+    if average_response_time > AVERAGE_MAX_RESPONSE_TIME_MS:
+        logging.error(f"Average response time exceeded 200ms: {average_response_time}ms")
+
+class ExponentialLoadUser(HttpUser):
+    @task
+    def get_forecast(self):
+        self.client.get("/forecast")
+
+class WebsiteUser(HttpUser):
+    tasks = [ExponentialLoadUser]
+    host = "http://forecasting-platform/api/"
+```
+
+#### 3. Robust Data Validation with Avro Schema
 Utilizing Avro schema for data validation introduces a high level of data quality assurance by enforcing data structure and type conformity. This mechanism ensures that only correctly formatted data flows through the processing pipeline, reducing errors and inconsistencies. Furthermore, the implementation of a dead letter queue captures and isolates problematic data for further analysis and correction, preventing minor issues from escalating into major disruptions.
 
 <img src="https://i.ibb.co/Tbph6m1/Screenshot-2024-03-09-at-19-07-39.png" width="400" alt="Latency" style="display: block; margin-left: auto; margin-right: auto;">
@@ -309,6 +351,14 @@ Utilizing Avro schema for data validation introduces a high level of data qualit
 
 Together, these measures significantly enhance the reliability and quality of data within the system, crucial for accurate weather forecasting.
 
+#### 4. Dead Letter Queues and Advanced Retry/Failure Mechanism
+
+When a message either fails the AVRO schema validation or fails to be processed for networking reasons, it's interesting to consider a dead letter queue where messages will be re-processed once (e.g: `weather.failed.1`) and then end up in a new failure topic if the message is still not ingested (e.g: `weather.failed.2`).
+Uber wrote a classic on this here: https://www.uber.com/en-GB/blog/reliable-reprocessing/
+
+In the same way a payment processing doesn't go through straight away, a weather data point could fail to be ingested and be reprocessed:
+
+![Alt text](https://blog.uber-cdn.com/cdn-cgi/image/width=1476,quality=80,onerror=redirect,format=auto/wp-content/uploads/2018/02/Header-good.png)
 
 ## d. Conclusion: New Architecture Evaluation
 
