@@ -33,9 +33,7 @@ The event processor's role as a central hub for numerous input streams introduce
 ### 4. Latency and Inefficiency Induced by SQL Databases
 Incorporating SQL databases within a streaming architecture inherently introduces latency. This design choice can significantly hinder the real-time processing capabilities essential for the platform's effectiveness and responsiveness.
 
-To ensure scalability and performance for a database servicing 1000 API users, employing a combination of read replicas, database sharding, caching mechanisms, load balancing, and auto-scaling is essential. These strategies collectively enhance query performance, reduce load on the primary database, ensure high availability, and enable the system to adapt dynamically to varying demand levels, thus maintaining a high-quality user experience as usage grows.
-
-No sign of such database optimizations in the architecture schema!
+The transactional nature of SQL databases, combined with the overhead of ensuring data consistency and integrity through ACID (Atomicity, Consistency, Isolation, Durability) properties, can significantly slow down data processing. This can be particularly challenging in scenarios requiring instantaneous data analysis and decision-making, where any delay can compromise the platform's effectiveness and responsiveness. As such, while SQL databases offer extensive capabilities for data management, their use in a realtime context must be carefully balanced against the need for speed and efficiency.
 
 ### 5. Complexity from Excessive Service Layers
 The architecture's reliance on numerous artificial service layers not only adds unnecessary complexity but also predisposes the system to increased latency. Simplifying these layers could enhance performance and reduce the risk of bottlenecks.
