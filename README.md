@@ -108,7 +108,7 @@ My new proposed architecture for the weather forecasting platform is as follows:
 ![Alt text](https://i.ibb.co/1mCkHPk/Screenshot-2024-03-10-at-13-50-14.png "Optional title")
 
 
-The Kafka input topic is synchronized automatically with a SQL table via a Confluent connector (no code, no latency for the forecast).
+The Kafka input topic is synchronized automatically with a SQL table via a Confluent connector (no code, low latency, no impact on the performance of the forecasting service).
 
 A forecasting service based on Flink is consuming data from the input weather topic and running the pre-processing and processing in a distributed and streamed way.
 Flink auto-scales its jobs internally and we add a layer of auto-scaling via Kubernetes (i.e: more task-managers and Flink clusters can be spawned).
