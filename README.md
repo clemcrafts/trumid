@@ -95,6 +95,8 @@ For a VM equipped with 8 vCPUs and 32 GB RAM, you'd typically see expenses betwe
 
 ## II. System Improvement Task
 
+An improvement of the architecture for the weather forecasting platform.
+
 ### a. Introduction
 
 
