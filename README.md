@@ -297,6 +297,15 @@ docker build -f src/app/Dockerfile -t weather-app .
 docker run -p 8000:80 weather-app
 ```
 
+To run a quick comparison between the baseline and the optimize code:
+
+```
+pip install -r src/app/requirements.txt
+pip install -r tests/requirements.txt
+python tests/comparison.py
+```
+
+
 ## 2. Code optimization
 
 ### a. Vectorize calculations with pandas
