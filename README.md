@@ -110,15 +110,21 @@ My new proposed architecture for the weather forecasting platform is as follows:
 ![Alt text](https://i.ibb.co/1mCkHPk/Screenshot-2024-03-10-at-13-50-14.png "Optional title")
 
 
-This involves a couple of microservices present on the architecture diagram (forecasting service, API service) and some others 
-like a reporting service and a UI service. They auto-scale leveraging Kubernetes and the internal auto-scaling capabilities of Flink.
+The Kafka input topic is synchronized automatically with a SQL table via a Confluent connector (no code, no latency for the forecast).
+
+A forecasting service based on Flink is consuming data from the input weather topic and running the pre-processing and processing in a distributed and streamed way.
+Flink auto-scales its jobs internally and we add a layer of auto-scaling via Kubernetes (i.e: more task-managers and Flink clusters can be spawned).
+
+No queue, no latency, and the data from the different steps are stored in states (fast in-memory checkpoints), dumped automatically to S3 storage under the hood: the app can stop and restart at any moment.
+
+Then, the weather forecast data goes to an output forecast topic, automatically synced with a forecast SQL table.
+
+An API is serving the forecast data by city leveraging Redis to cache, Kubernetes to auto-scale and asynchronous querying to handle more queries coming from the 1k users.
 
 
 ![Alt text](https://i.ibb.co/Qv3JTfy/Screenshot-2024-03-06-at-15-56-14.png "Optional title")
 
-The CI/CD is running unit, integration and component test against each docker image. Eventually 2 load tests are performed using Locust.
-
-The first one is a constant high load of messages (2x production load) and the second one is a fast ramp up in load intensity so simulate a bottleneck leading to a faster than usual acceleration of messages.
+The CI/CD is running static code analysis, unit, integration and component test against each docker image. Eventually 2 load tests are performed using Locust against the pre-prod instance before deployment and on-schedule.
 
 
 ### b. Scalability and Performance Improvements
