@@ -607,9 +607,13 @@ stream of randomnized data):
 
 # IV. Optional Additional Features Task
 
+A list of optional features for BI and monitoring/observability.
+
 ## 1. BI Reporting Dashboard With Airflow and Tableau
 
-With view delivered by Airflow:
+A good tool to visualize dashboards of analytics is Tableau.
+We could imagine that an Airflow instance would pull data by region from the forecast table, perform calculation (volatility, averages, etc) and provide views for Tableau by user depending on their region.
+
 
 ![Alt text](https://i.ibb.co/9gtZ7Fm/Screenshot-2024-03-07-at-13-55-48.png "Optional title")
 
