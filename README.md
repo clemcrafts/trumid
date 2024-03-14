@@ -30,8 +30,8 @@ With a moderate network speed (1 Gbps), the read speeds might be closer to 100-1
 The event processor, tasked with managing an excessive number of input streams, emerges as another single point of failure. This overburdening raises concerns about the system's ability to maintain reliable performance under strain.
 
 The event processor's role as a central hub for numerous input streams introduces significant risk, making it a bottleneck that could undermine the system's robustness and agility. This configuration, by centralizing too much logic and responsibility, limits the potential for efficient data handling and real-time responsiveness. Adopting a more modular approach, where duties are distributed among specialized components, could substantially improve the system's ability to evolve and handle diverse workloads with greater resilience.
-### 4. Latency and Inefficiency Induced by SQL Databases
-Incorporating SQL databases within a streaming architecture inherently introduces latency. This design choice can significantly hinder the real-time processing capabilities essential for the platform's effectiveness and responsiveness.
+### 4. Latency and Inefficiency Induced by a SQL Database
+Incorporating a SQL database in the middle of a real-time calculation architecture inherently introduces latency. This design choice can significantly hinder the real-time processing capabilities essential for the platform's effectiveness and responsiveness.
 
 The transactional nature of SQL databases, combined with the overhead of ensuring data consistency and integrity through ACID (Atomicity, Consistency, Isolation, Durability) properties, can significantly slow down data processing. This can be particularly challenging in scenarios requiring instantaneous data analysis and decision-making, where any delay can compromise the platform's effectiveness and responsiveness. As such, while SQL databases offer extensive capabilities for data management, their use in a realtime context must be carefully balanced against the need for speed and efficiency.
 
@@ -63,7 +63,7 @@ This setup allows for the efficient preparation of data and calculation of forec
 The application utilizes Kafka as its message bus, an excellent selection for a real-time weather forecasting platform. Kafka's strengths in providing high throughput, fault tolerance, and significant scalability align well with the demands of processing and distributing real-time weather data efficiently. 
 This technology choice underscores the platform's commitment to robust and reliable data handling capabilities.
 
-### 4. Simplicity ad Cost of Deployment and Maintenance
+### 4. Simplicity and Cost of Deployment and Maintenance
 A single virtual machine model simplifies the operational aspect of the application. It avoids the complexities associated with synchronizing multiple services across different servers or clusters. 
 This approach reduces the immediate overheads related to infrastructure management, network configuration, and services syncrhonization, which are inherent in distributed systems. 
 
@@ -105,25 +105,26 @@ An improvement of the architecture for the weather forecasting platform.
 
 My new proposed architecture for the weather forecasting platform is as follows:
 
-![Alt text](https://i.ibb.co/1mCkHPk/Screenshot-2024-03-10-at-13-50-14.png "Optional title")
+![Alt text](https://i.ibb.co/9N87yG2/Screenshot-2024-03-10-at-19-10-44.png "Optional title")
 
 
-The Kafka input topic is synchronized automatically with a SQL table via a Confluent connector (no code, low latency, no impact on the performance of the forecasting service).
+The Kafka input topic is synchronized automatically with a SQL table via a Confluent JDBC sink connector (no code, low latency, no impact on the performance of the forecasting service).
 
 A forecasting service based on Flink is consuming data from the input weather topic and running the pre-processing and processing in a distributed and streamed way.
-Flink auto-scales its jobs internally and we add a layer of auto-scaling via Kubernetes (i.e: more task-managers and Flink clusters can be spawned).
+Flink auto-scales its jobs internally and we add a layer of auto-scaling via Kubernetes (i.e: more Flink clusters/managers can be spawned).
 
-No queue, no latency, and the data from the different steps are stored in states (fast in-memory checkpoints), dumped automatically to S3 storage under the hood: the app can stop and restart at any moment.
+No queue, decreasing latency drastically, and the data from the different steps are stored in states (fast in-memory checkpoints), dumped automatically to S3 storage under the hood: the app can stop and restart at any moment.
 
 Then, the weather forecast data goes to an output forecast topic, automatically synced with a forecast SQL table.
 
 An API is serving the forecast data by city leveraging Redis to cache, Kubernetes to auto-scale and asynchronous querying to handle more queries coming from the 1k users.
 
+To drastically increase the testability, maintainability and robustness of the system, we want multiple environments to test our application before reaching production.
 
 ![Alt text](https://i.ibb.co/Qv3JTfy/Screenshot-2024-03-06-at-15-56-14.png "Optional title")
 
-The CI/CD is running static code analysis, unit, integration and component test against each docker image. Eventually 2 load tests are performed using Locust against the pre-prod instance before deployment and on-schedule.
-
+The CI/CD, allowing to deploy to each environment, is also running static code analysis, unit, integration and component test against each docker image. Eventually 2 load tests are performed using Locust against the QAT instance before deployment and on-schedule.
+Pre-prod is an iso-production environment used for disaster recovery if production goes down.
 
 ### b. Scalability and Performance Improvements
 
@@ -133,16 +134,17 @@ We also want the system to be low latency (~seconds per hour of run) and more im
 
 #### 1. Exit virtual machine running docker-compose in production 
 
-In the legacy architecture, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
+In the legacy architecture, if the VM dies: it's game over.
 
-We suggest a service split allowing different scaling strategies and resilience in general:
+In our new architecture, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
+Also, if one goes down (unlikely anyway due to auto-scaling), there is a pre-prod backup service ready to jump in.
+
+This is what we suggest with a service split allowing different scaling strategies and resilience in general:
 
 ![Alt text](https://i.ibb.co/RHkVg6K/Screenshot-2024-03-09-at-16-08-34.png "Services")
 
-Here, if the forecasting service is down, Kafka is still running, the database is still ingesting inputs, the API is still serving results and the caching is still functional.
-
 #### 2. Move from batching to streaming paradigm via Flink
-Batching does not really scale because it forces you to consider batch of data in a suboptimal way when streaming technologies do that for you at a lower level under the hood.
+Batching does not really scale because it forces you to consider batches of data in a suboptimal way when streaming technologies do that for you at a lower level under the hood.
 Also, it seems like the application is not leveraging any distributed processing and Flink is great for that, mixing functional programming and distributed cumputations.
 
 Here is a snippet of what could be done, keying by city, windowing for every minute:
@@ -186,13 +188,16 @@ I've contributed to build the entire realtime recommendation system with Flink f
 
 #### 3. Auto-scaling with Flink and Kubernetes
 The use of Kubernetes is duplicating the number of Flink clusters, allows the forecasting service to auto-scale at 2 levels.
-First, the flink job is scaling with load on different clusters.
+
+First, Flink is scaling jobs on its own via the task/job manager. 
+
+But also, adding a Kubernetes auto-scaler on top of it allows to scale the task/job managers themselves by scaling up the numbers of Flink clusters. 
 
 ![Alt text](https://i.ibb.co/XbmmC5c/Screenshot-2024-03-08-at-19-26-48.png "Flink Autoscaling")
 
 With such a setup, Kubernetes will scale up the number of Flink clusters (with task managers) when if the load peaks and then scale it down when it drops.
  
-An experiment is available on the Flink's blog, showing how an increase of lag on an input Kafka topic will generate an increase of resource consumption scaling up the number of task managers decreasing the load.
+An experiment is available on the Flink's blog (see: https://flink.apache.org/2021/05/06/scaling-flink-automatically-with-reactive-mode/), showing how an increase of lag on an input Kafka topic will generate an increase of resource consumption scaling up the number of task managers decreasing the load.
 
 ![Alt text](https://i.ibb.co/yyFxs6L/Screenshot-2024-03-08-at-19-40-27.png "Flink Autoscaling")
 
@@ -215,7 +220,7 @@ How fast? Up to 400k messages/second.
 #### 6. Streamlined Data Synchronization with Connectors
 Integrating directly with data sources through connectors, Flink ensures seamless and synchronized data ingestion. This approach not only enhances data flow efficiency but also supports real-time processing needs by minimizing delays in data availability and processing.
 
-It's easy to create a Postgres sink based on a Kafka topic in concluent, see: https://docs.confluent.io/cloud/current/connectors/cc-postgresql-sink.html.
+It's easy to create a JDBC sink connector for Postgres based on a Kafka topic in Confluent, see: https://docs.confluent.io/cloud/current/connectors/cc-postgresql-sink.html.
 
 ![Alt text](https://i.ibb.co/W59qQ3y/Screenshot-2024-03-09-at-17-03-38.png)
 
@@ -303,12 +308,18 @@ async def get_forecast(city_name: str):
 #### 1. Disaster Recovery and Seamless Deployment Capabilities
 The application incorporates a disaster recovery strategy, ensuring continuity of service and data integrity in the event of system failures. Coupled with methodologies for no-downtime deployments, this approach not only enhances system reliability but also maintains uninterrupted access for users, critical for real-time weather forecasting services.
 
+In our case, we use the PRE-PROD environment as a dual of the PROD environment running the same code version with the same live data:
+
+![Alt text](https://i.ibb.co/XVPZGfP/Screenshot-2024-03-10-at-19-30-50.png)
+
+it's useful for blue-green deployment and, if prod is down, it's used as a backup version.
+
 #### 2. Comprehensive Testing via Lower Environments
-The introduction of lower environments (such as Development, Testing, and Staging) facilitates thorough testing and validation processes before any production release. This structured approach allows for the identification and resolution of issues in a controlled manner, significantly reducing the risk of introducing bugs or performance issues to the live environment. As a result, the overall reliability of the application is greatly improved, ensuring that updates enhance rather than compromise the user experience.
+The introduction of lower environments (such as DEV, QAT, PREPROD and PROD) facilitates thorough testing and validation processes before any production release. This structured approach allows for the identification and resolution of issues in a controlled manner, significantly reducing the risk of introducing bugs or performance issues to the live environment. As a result, the overall reliability of the application is greatly improved, ensuring that updates enhance rather than compromise the user experience.
 
 On lower test environment, on top of integration/unit/end-2-end tests, it's possible to use Locust to verify how the system behaves under high load.
 
-For example we could run a load test before any deployment on 1500 users with a spawn rate of 100 users per second and verify that the average response time is below 200ms:
+For example we could run a load test before any deployment on 1500 mocked users with a spawn rate of 100 users per second and verify that the average response time is below 200ms:
 ```
 from locust import HttpUser, task, between, events
 import math
@@ -451,7 +462,7 @@ To deploy the application: actions > CI/CD Pipeline > Run workflow
 ![Alt text](https://i.ibb.co/1mJ7p78/Screenshot-2024-03-10-at-00-07-47.png)
 
 
-## 2. Code optimization
+## 2. Code Optimization
 
 ### a. Vectorized Calculations with Pandas
 
@@ -466,7 +477,7 @@ calculate_heat_index_optimized(
 )
 ```
 
-### b. Leverage groupby, transform, mean 
+### b. Leverage Groupby, Transform, Mean instead of Looping
 
 Pandas' built-in functions for group-wise operations and rolling calculationsare 
 significantly faster and more efficient due to the use of optimized C and Cython operations, minimizing 
@@ -498,7 +509,7 @@ return (
     )
 ```
 
-### d. What didn't work...
+### d. What Didn't Work...
 I've tried various things that did not bring better performance.
 Caching, jit, asyncio (normal, as it's cpu-bound...), multithreading (normal, because of the GIL), Spark/Dask (normal, my local can't distribute computations).
 Happy to go through them during the call if needed.
@@ -536,7 +547,7 @@ def step_compare_results(context):
     assert diff == {}, f"Results differ: {diff}"
 ```
 
-## 3. Performance Analysis
+## 4. Performance Analysis
 
 As part of the end-2-end tests with Behave, we test the performance versus the baseline against 
 3 different datasets and ensure that it's always at least 97% faster on every CI/CD run.
@@ -578,7 +589,7 @@ The datasets and the results are described below, the large dataset is 1 city wi
 Not only the vectorized version is faster on a given dataset but scales better as the dataset grows.
 To go even faster on even larger datasets would require the use of Spark/Dask in the cloud hosted on AWS EMR (for example) leveraging managed clusters, optimized for distributed map-reduce frameworks. 
 
-## 3. CI/CD and other goodies
+## 5. Continuous Integration and Deployment
 
 I've embedded all the tests (unit, integration, end-2-end) in a CI/CD pipeline to enforce 
 correctness and performance checks on every push:
@@ -605,7 +616,7 @@ stream of randomnized data):
 
 A list of optional features for BI and monitoring/observability.
 
-## 1. BI Reporting Dashboard With Airflow and Tableau
+## 1. BI Reporting Dashboard with Airflow and Tableau
 
 A good tool to visualize dashboards of analytics is Tableau.
 We could imagine that an Airflow instance would pull data by region from the forecast table, perform calculation (volatility, averages, etc) and provide views for Tableau by user depending on their region.
@@ -615,7 +626,7 @@ We could imagine that an Airflow instance would pull data by region from the for
 
 Users (internal or external) can be given read-only access to dashboards by region and enjoy advanced weather analytics.
 
-## 2. Advanced system monitoring via Prometheus
+## 2. Advanced System Monitoring via Prometheus
 
 To monitor resources and system-level metrics, Prometheus and Grafana are the elephants in the room:
 
